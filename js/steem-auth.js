@@ -119,3 +119,47 @@ export async function verifyPostingKey(username,postingKey){
   const timeout=new Promise((_,reject)=>{timeoutId=setTimeout(()=>reject(new Error('AUTH_TIMEOUT')),AUTH_TIMEOUT_MS)});
   try{return await Promise.race([authPromise,timeout])}finally{clearTimeout(timeoutId)}
 }
+
+async function verifyKeychainSignature(username,message,signature){
+  const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(message));
+  const hash=[...new Uint8Array(digest)].map(byte=>byte.toString(16).padStart(2,'0')).join('');
+  const body=JSON.stringify({jsonrpc:'2.0',method:'database_api.verify_signatures',params:{hash,signatures:[signature],required_owner:[],required_active:[],required_posting:[username],required_other:[]},id:1});
+  const requests=STEEM_RPC_ENDPOINTS.map((endpoint,index)=>{
+    const controller=new AbortController();
+    const timer=setTimeout(()=>controller.abort(),index===0?RPC_TIMEOUT_MS:10000);
+    return fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body,cache:'no-store',signal:controller.signal})
+      .then(async response=>{
+        if(!response.ok)throw new Error(`HTTP_${response.status}`);
+        const payload=await response.json();
+        if(payload?.error)throw new Error(payload.error.message||'RPC_ERROR');
+        if(payload?.result?.valid===true)return true;
+        throw new Error('KEYCHAIN_SIGNATURE_INVALID');
+      })
+      .finally(()=>clearTimeout(timer));
+  });
+  try{return await Promise.any(requests)}catch(error){
+    const errors=Array.isArray(error?.errors)?error.errors:[];
+    if(errors.some(item=>item?.message==='KEYCHAIN_SIGNATURE_INVALID'))throw new Error('KEYCHAIN_SIGNATURE_INVALID');
+    throw new Error('STEEM_RPC_UNAVAILABLE');
+  }
+}
+
+export async function verifyKeychainLogin(username){
+  const accountName=String(username??'').trim().toLowerCase();
+  if(!accountName)throw new Error('USERNAME_EMPTY');
+  if(!globalThis.steem_keychain)throw new Error('KEYCHAIN_NOT_INSTALLED');
+  if(typeof globalThis.steem_keychain.requestSignBuffer!=='function')throw new Error('KEYCHAIN_API_UNAVAILABLE');
+  const message=`Steem Flags Login\nAccount: ${accountName}\nNonce: ${crypto.randomUUID()}\nTimestamp: ${Date.now()}`;
+  const signature=await new Promise((resolve,reject)=>{
+    let settled=false;
+    const finish=(fn,value)=>{if(settled)return;settled=true;fn(value)};
+    try{
+      globalThis.steem_keychain.requestSignBuffer(accountName,message,'Posting',response=>{
+        if(response?.success&&response?.result)return finish(resolve,response.result);
+        finish(reject,new Error(response?.message||response?.error||'KEYCHAIN_LOGIN_REJECTED'));
+      });
+    }catch(error){finish(reject,error)}
+  });
+  await verifyKeychainSignature(accountName,message,signature);
+  return {username:accountName};
+}
