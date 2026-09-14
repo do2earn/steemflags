@@ -33,7 +33,25 @@ def batch_get_ops(start_block, end_block):
     req = Request(RPC, data=payload, headers={"Content-Type": "application/json", "User-Agent": "SteemFlags-GitHubAction/1.2"})
     with urlopen(RPC, data=payload, timeout=120) as response:
         body = json.loads(response.read().decode())
-    results = {int(item["id"]): item.get("result", []) for item in body if "id" in item and not item.get("error")}
+
+    # Some Steem RPC responses do not support JSON-RPC batch requests and
+    # return a single object instead of a list. Fall back to individual calls.
+    if isinstance(body, dict):
+        if body.get("error"):
+            raise RuntimeError(body["error"])
+        return {
+            block: rpc("condenser_api.get_ops_in_block", [block, False]) or []
+            for block in range(start_block, end_block + 1)
+        }
+
+    if not isinstance(body, list):
+        raise RuntimeError("Unexpected Steem RPC batch response")
+
+    results = {
+        int(item["id"]): item.get("result", [])
+        for item in body
+        if isinstance(item, dict) and "id" in item and not item.get("error")
+    }
     if len(results) != end_block - start_block + 1:
         raise RuntimeError("Incomplete Steem block batch")
     return results
