@@ -7,6 +7,7 @@ async function startSteemFlags(){
     await import('./leaderboard.js?v=20260903-leaderboard-09');
     await import('./reward-ui.js?v=20260903-rewardmodal-06');
     await import('./home-buttons-patch.js?v=20260915-buttons-01');
+    await import('./reward-modal-patch.js?v=20260916-01');
   }catch(error){
     console.error('Steem Flags module load failed:',error);
     if(app){
