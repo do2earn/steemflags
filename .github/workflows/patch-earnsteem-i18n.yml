@@ -1,0 +1,35 @@
+name: Patch Earn Steem i18n
+on:
+  push:
+    branches: [main]
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch earnsteem.html
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('earnsteem.html')
+          s=p.read_text(encoding='utf-8')
+          marker='</body>'
+          patch=r'''<script type="module" id="earnSteemI18nPatch">import{getLanguage}from'./js/i18n.js';const T={en:{title:'📝 Publish a Gameplay Content for Steem Flags',label:'Select a Steem Platform:',button:'Publish a Gameplay Content for Steem Flags',n1:'⚠️ Make sure to use the tags #steemgame and #steemflags when publishing; Otherwise, the Game Curation Team will not identify your content for an upvote.',n2:'✅ To support the development of Steem Flags game, Please set "Beneficiaries" option to at least 10% and set the username to "@do2earn" (the Steem Flags game developer) when publishing.'},fa:{title:'📝 انتشار محتوای گیم‌پلی برای Steem Flags',label:'یک پلتفرم Steem را انتخاب کنید:',button:'انتشار محتوای گیم‌پلی برای Steem Flags',n1:'⚠️ هنگام انتشار، حتماً از تگ‌های #steemgame و #steemflags استفاده کنید؛ در غیر این صورت، تیم کیوریشن بازی محتوای شما را برای دریافت رأی مثبت شناسایی نخواهد کرد.',n2:'✅ برای حمایت از توسعه بازی Steem Flags، لطفاً هنگام انتشار گزینه «Beneficiaries» را حداقل روی ۱۰٪ تنظیم کرده و نام کاربری «@do2earn» (توسعه‌دهنده بازی Steem Flags) را وارد کنید.'},ur:{title:'📝 Steem Flags کے لیے گیم پلے مواد شائع کریں',label:'Steem پلیٹ فارم منتخب کریں:',button:'Steem Flags کے لیے گیم پلے مواد شائع کریں',n1:'⚠️ شائع کرتے وقت #steemgame اور #steemflags ٹیگز ضرور استعمال کریں؛ بصورت دیگر Game Curation Team آپ کے مواد کو اپ ووٹ کے لیے شناخت نہیں کرے گی۔',n2:'✅ Steem Flags گیم کی ترقی میں مدد کے لیے، براہ کرم شائع کرتے وقت "Beneficiaries" آپشن کو کم از کم 10% پر سیٹ کریں اور صارف نام "@do2earn" (Steem Flags گیم ڈویلپر) درج کریں۔'},hi:{title:'📝 Steem Flags के लिए गेमप्ले सामग्री प्रकाशित करें',label:'Steem प्लेटफ़ॉर्म चुनें:',button:'Steem Flags के लिए गेमप्ले सामग्री प्रकाशित करें',n1:'⚠️ प्रकाशित करते समय #steemgame और #steemflags टैग का उपयोग करना सुनिश्चित करें; अन्यथा Game Curation Team आपके कंटेंट को अपवोट के लिए पहचान नहीं पाएगी।',n2:'✅ Steem Flags गेम के विकास में सहायता करने के लिए, प्रकाशित करते समय "Beneficiaries" विकल्प को कम से कम 10% पर सेट करें और उपयोगकर्ता नाम "@do2earn" (Steem Flags गेम डेवलपर) दर्ज करें।'},bn:{title:'📝 Steem Flags-এর জন্য গেমপ্লে কনটেন্ট প্রকাশ করুন',label:'একটি Steem প্ল্যাটফর্ম নির্বাচন করুন:',button:'Steem Flags-এর জন্য গেমপ্লে কনটেন্ট প্রকাশ করুন',n1:'⚠️ প্রকাশ করার সময় #steemgame এবং #steemflags ট্যাগ ব্যবহার করতে ভুলবেন না; অন্যথায় Game Curation Team আপনার কনটেন্টকে আপভোটের জন্য শনাক্ত করতে পারবে না।',n2:'✅ Steem Flags গেমের উন্নয়নে সহায়তা করতে, প্রকাশের সময় "Beneficiaries" অপশনটি কমপক্ষে 10%-এ সেট করুন এবং ব্যবহারকারীর নাম "@do2earn" (Steem Flags গেমের ডেভেলপার) দিন।'},es:{title:'📝 Publicar contenido de gameplay para Steem Flags',label:'Selecciona una plataforma de Steem:',button:'Publicar contenido de gameplay para Steem Flags',n1:'⚠️ Asegúrate de usar las etiquetas #steemgame y #steemflags al publicar; de lo contrario, el Equipo de Curación del Juego no identificará tu contenido para un voto positivo.',n2:'✅ Para apoyar el desarrollo del juego Steem Flags, establece la opción "Beneficiaries" en al menos un 10 % y usa el nombre de usuario "@do2earn" (el desarrollador del juego Steem Flags) al publicar.'},zh:{title:'📝 发布 Steem Flags 游戏内容',label:'选择一个 Steem 平台：',button:'发布 Steem Flags 游戏内容',n1:'⚠️ 发布时请务必使用 #steemgame 和 #steemflags 标签；否则，游戏策展团队将无法识别您的内容并进行点赞。',n2:'✅ 为支持 Steem Flags 游戏的开发，请在发布时将“Beneficiaries”选项设置为至少 10%，并将用户名设置为“@do2earn”（Steem Flags 游戏开发者）。'},ko:{title:'📝 Steem Flags 게임 콘텐츠 게시',label:'Steem 플랫폼을 선택하세요:',button:'Steem Flags 게임 콘텐츠 게시',n1:'⚠️ 게시할 때 반드시 #steemgame 및 #steemflags 태그를 사용하세요. 그렇지 않으면 Game Curation Team이 업보트를 위한 콘텐츠를 식별할 수 없습니다.',n2:'✅ Steem Flags 게임 개발을 지원하려면 게시할 때 "Beneficiaries" 옵션을 최소 10%로 설정하고 사용자 이름을 "@do2earn"(Steem Flags 게임 개발자)으로 설정하세요.'}};function render(){const t=T[getLanguage()]||T.en;const a=document.getElementById('publishGameplayTitle'),b=document.getElementById('steemPlatformLabel'),c=document.getElementById('publishGameplayButton'),n=document.querySelectorAll('#publishGameplayNotice p');if(a)a.textContent=t.title;if(b)b.textContent=t.label;if(c)c.textContent=t.button;if(n.length>1){n[0].textContent=t.n1;n[1].textContent=t.n2}const h=document.getElementById('publishGameplayHint');if(h){h.textContent='';h.style.display='none'}}render();window.addEventListener('languagechange',render);</script>'''
+          if 'id="earnSteemI18nPatch"' not in s:
+              s=s.replace(marker,patch+marker)
+              p.write_text(s,encoding='utf-8')
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add earnsteem.html
+          git diff --cached --quiet || git commit -m 'Translate Earn Steem publishing card and hide publish hint'
+          git push
+      - name: Remove temporary workflow
+        run: |
+          rm -f .github/workflows/patch-earnsteem-i18n.yml
+          git add .github/workflows/patch-earnsteem-i18n.yml
+          git commit -m 'Remove temporary Earn Steem i18n workflow'
+          git push
