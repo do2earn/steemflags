@@ -9,7 +9,7 @@ SCANNER = ROOT / "data/rewards/scanner.json"
 LEADERBOARD = ROOT / "data/leaderboard.json"
 RPC = "https://api.steemit.com"
 REWARD_ID = "steemflags_reward_v1"
-BATCH_SIZE = 100
+BATCH_SIZE = 50
 MAX_BLOCKS_PER_RUN = 5000
 INITIAL_LOOKBACK = 1000
 
@@ -69,7 +69,8 @@ def main():
     if last_block >= head:
         scanner["last_block"] = last_block
         scanner["updated_at"] = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
-        SCANNER.write_text(json.dumps(scanner, indent=2) + "\n", encoding="utf-8")
+        SCANNER.write_text(json.dumps(scanner, indent=2) + "
+", encoding="utf-8")
         return
 
     target_end = min(head, last_block + MAX_BLOCKS_PER_RUN)
@@ -120,8 +121,10 @@ def main():
         lb["processed_events"] = list(processed)[-5000:]
         lb["updated_at"] = scanner["updated_at"]
         lb["version"] = 2
-        LEADERBOARD.write_text(json.dumps(lb, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-    SCANNER.write_text(json.dumps(scanner, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+        LEADERBOARD.write_text(json.dumps(lb, indent=2, ensure_ascii=False) + "
+", encoding="utf-8")
+    SCANNER.write_text(json.dumps(scanner, indent=2, ensure_ascii=False) + "
+", encoding="utf-8")
     print(f"Scanned through block {end_block}; added {added} reward event(s).")
 
 
