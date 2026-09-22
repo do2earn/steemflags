@@ -114,3 +114,21 @@ export async function showFlagSetting(username, currentAccount=null){
     };
   });
 }
+
+const style=document.createElement('style');
+style.textContent=`
+.flagSettingModal{position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;padding:18px;box-sizing:border-box}
+.flagSettingBackdrop{position:absolute;inset:0;background:rgba(0,0,0,.72)}
+.flagSettingCard{position:relative;width:min(100%,430px);box-sizing:border-box;padding:22px;border:1px solid rgba(255,255,255,.18);border-radius:16px;background:#101827;color:#fff;box-shadow:0 18px 55px rgba(0,0,0,.45)}
+.flagSettingCard h2{margin:0 0 18px;text-align:center;font-size:22px}
+.flagSettingLabel{display:block;margin:0 0 9px;font-weight:700}
+.flagSettingSelect{width:100%;height:44px;padding:0 12px;border:1px solid rgba(255,255,255,.25);border-radius:9px;background:#fff;color:#111;font-size:15px;box-sizing:border-box}
+.flagSettingFeedback{min-height:20px;margin:8px 0 4px;text-align:center;font-size:13px}
+.flagSettingFeedback.bad{color:#ff6b6b}
+.flagSettingActions{display:flex;justify-content:center;gap:16px;margin-top:16px}
+.flagSettingActions button{min-width:125px;padding:10px 16px;border:0;border-radius:9px;font-weight:800;font-size:14px;cursor:pointer}
+.flagSettingCancel{background:#f2c94c;color:#111}
+.flagSettingSave{background:#2e9b57;color:#fff}
+.flagSettingActions button:disabled{opacity:.55;cursor:not-allowed}
+`;
+document.head.appendChild(style);
