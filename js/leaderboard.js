@@ -6,7 +6,7 @@ function escapeHtml(value){return String(value).replace(/[&<>\\'\"]/g,c=>({'&':'
 async function readLeaderboard(){
   const section=document.getElementById('leaderboardSection');
   const limit=Math.max(1,Number(section?.dataset.limit)||100);
-  const url=`${API_BASE}/api/accounts?limit=${limit}&_=${Date.now()}`;
+  const url=`${API_BASE}/api/leaderboard?limit=${limit}&_=${Date.now()}`;
   const controller=new AbortController();
   const timer=setTimeout(()=>controller.abort(),10000);
   try{
@@ -17,7 +17,7 @@ async function readLeaderboard(){
     if(!response.ok)throw Error(`LEADERBOARD_HTTP_${response.status}_${data?.error||'ERROR'}`);
     if(!data?.success)throw Error(`LEADERBOARD_API_${data?.error||'FAILED'}`);
     const rows=Array.isArray(data.accounts)?data.accounts:(Array.isArray(data.leaderboard)?data.leaderboard:[]);
-    return rows.map(a=>({Username:a.Username??a.username??'',D2E:Number(a.D2E??a.d2e??a.points??0)||0})).filter(a=>a.Username);
+    return rows.map(a=>({Username:a.Username??a.username??'',D2E:Number(a.D2E??a.d2e??a.points??a.sf??0)||0,Flag:a.Flag??a.flag??''})).filter(a=>a.Username);
   }catch(e){
     if(e?.name==='AbortError')throw Error('LEADERBOARD_TIMEOUT');
     throw e;
@@ -30,7 +30,7 @@ function renderLeaderboard(accounts){
   const section=document.getElementById('leaderboardSection');
   const limit=Math.max(1,Number(section?.dataset.limit)||accounts.length);
   accounts=accounts.slice(0,limit);
-  body.innerHTML=accounts.map((a,i)=>{const u=String(a.Username||'—'),d=Math.max(0,Number(a.D2E)||0),medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':String(i+1);return `<tr><td>${medal}</td><td><div class="leaderboardUser"><img class="leaderboardAvatar" src="${avatarUrl(u)}" alt="@${escapeHtml(u)}" loading="lazy" onerror="this.style.visibility='hidden'"><span>@${escapeHtml(u)}</span></div></td><td>${d.toLocaleString()}</td></tr>`}).join('')||'<tr><td colspan="3" class="muted">No players yet.</td></tr>';
+  body.innerHTML=accounts.map((a,i)=>{const u=String(a.Username||'—'),d=Math.max(0,Number(a.D2E)||0),flag=String(a.Flag||'').trim(),medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':String(i+1);return `<tr><td>${medal}</td><td><div class="leaderboardUser"><img class="leaderboardAvatar" src="${avatarUrl(u)}" alt="@${escapeHtml(u)}" loading="lazy" onerror="this.style.visibility='hidden'"><span>@${escapeHtml(u)}</span></div></td><td>${d.toLocaleString()}</td></tr>`}).join('')||'<tr><td colspan="3" class="muted">No players yet.</td></tr>';
 }
 
 async function loadLeaderboard(){
