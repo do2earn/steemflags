@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#080d1a">
+<meta name="description" content="About Steem Flags - Guess the flags and earn $STEEM">
+<title>About - Steem Flags</title>
+<link rel="stylesheet" href="css/style.css?v=20260830-footer-01">
+<link rel="stylesheet" href="css/preloader.css?v=20260826-01">
+<script src="js/preloader.js?v=20260826-01" defer></script>
+<script src="js/d2e-logo.js?v=20260825-02" defer></script>
+</head>
+<body>
+<div id="app"></div>
+<script type="module">
+import {getStoredUsername,loadState,refreshDailyEnergy,syncPurchasedEnergy} from './js/storage.js?v=20260822-leaderboard-01';
+import {loadMenu} from './js/menu.js?v=20260820-05';
+import {loadAssetBar as loadSharedAssetBar,refreshAssetBar} from './js/asset-bar.js?v=20260826-assetbar-04';
+import {getLanguage,t} from './js/i18n.js';
+import './js/leaderboard.js?v=20260903-leaderboard-09';
+
+function renderLeaderboardPage(){
+ const lang=getLanguage();
+ document.documentElement.lang=lang;
+ document.documentElement.dir=['fa','ur'].includes(lang)?'rtl':'ltr';
+ document.title=(lang==='fa'?'لیدربورد Steem Flags':lang==='ur'?'Steem Flags لیڈر بورڈ':lang==='zh'?'Steem Flags 排行榜':lang==='ko'?'Steem Flags 리더보드':lang==='hi'?'Steem Flags लीडरबोर्ड':lang==='bn'?'Steem Flags লিডারবোর্ড':lang==='es'?'Clasificación de Steem Flags':'Steem Flags Leaderboard');
+ const title=lang==='en'?'Steem Flags Leaderboard':t('leaderboardTitle',lang);
+ const main=document.querySelector('main.appShell');
+ if(!main)return;
+ main.innerHTML=`<section id="leaderboardSection" class="leaderboardSection" aria-label="🏆 ${title}">
+   <div id="leaderboard" class="card leaderboard">
+     <div class="leaderboardTitle"><span class="trophy">🏆</span><h2>${title}</h2></div>
+     <div id="rewardPool" class="rewardPool">
+       <div class="rewardPoolInner">
+         <div class="rewardPoolHeading"><span class="rewardPoolEmoji">💰</span> Weekly $STEEM Rewards Pool</div>
+         <div class="rewardPoolLine"><span class="rewardPoolEmoji">✅</span> Amount: 20 ~ 100 $STEEM</div>
+         <div class="rewardPoolLine"><span class="rewardPoolEmoji">✅</span> Distributed to the top 5 gamers on the leaderboard</div>
+         <div class="rewardPoolComingSoon">⚠️ Coming Soon</div>
+       </div>
+     </div>
+     <div id="leaderboardStatus" class="muted">Loading leaderboard…</div>
+     <div class="leaderboardTableWrap"><table id="leaderboardTable" class="leaderboardTable"><thead><tr><th>Rank</th><th>Gamer</th><th>D2E Rewards</th></tr></thead><tbody id="leaderboardBody"></tbody></table></div>
+   </div>
+ </section>`;
+ window.dispatchEvent(new CustomEvent('steemflags:leaderboard-page-ready'));
+}
+async function loadLeaderboardPage(){
+ const app=document.getElementById('app');
+ const response=await fetch('./components/app-shell.html?v=20260915-leaderboard-01',{cache:'no-store'});
+ if(!response.ok)throw Error('Unable to load app shell.');
+ app.innerHTML=await response.text();
+ ['loginView','homeView','gameView'].forEach(id=>document.getElementById(id)?.remove());
+ const main=document.querySelector('main.appShell');
+ if(main)main.innerHTML='<section class="card"><p class="muted">Loading leaderboard…</p></section>';
+ await loadSharedAssetBar();
+ const username=getStoredUsername();
+ if(username){await syncPurchasedEnergy(refreshDailyEnergy(loadState(username),username),username);await refreshAssetBar(username)}
+ await loadMenu();
+ renderLeaderboardPage();
+ window.addEventListener('languagechange',renderLeaderboardPage);
+ window.dispatchEvent(new CustomEvent('steemflags:ready'));
+}
+loadLeaderboardPage().catch(error=>{console.error(error);window.dispatchEvent(new CustomEvent('steemflags:ready'))});
+</script>
+<style>
+.leaderboardSection{width:100%;max-width:760px;margin:0 auto}
+.leaderboard{width:100%;box-sizing:border-box}
+.leaderboardTitle{display:flex;align-items:center;gap:6px}
+.leaderboardTitle .trophy{line-height:1}
+.leaderboardTitle h2{margin:0}
+.leaderboardTable{width:100%;border-collapse:separate;border-spacing:0 7px}
+.leaderboardTable th,.leaderboardTable td{padding:9px}
+.leaderboardTable td:last-child{text-align:right}
+.leaderboardUser{display:flex;align-items:center;gap:8px}
+.leaderboardAvatar{width:32px;height:32px;border-radius:50%;object-fit:cover}
+.rewardPool{width:100%;margin:12px 0 16px;box-sizing:border-box}
+.rewardPoolInner{width:100%;box-sizing:border-box;padding:10px 13px;border:1px solid rgba(255,255,255,.16);border-radius:11px;background:rgba(255,255,255,.025);opacity:.72;pointer-events:none;user-select:none;color:#888}
+.rewardPoolHeading,.rewardPoolLine{color:#888}
+.rewardPoolEmoji{filter:grayscale(1);opacity:.75}
+.rewardPoolHeading{font-size:16px;line-height:1.35;font-weight:700;margin:0 0 7px;text-align:left}
+.rewardPoolLine{font-size:13px;line-height:1.4;margin:3px 0;text-align:left}
+.rewardPoolComingSoon{color:#ff3b30;font-weight:800;text-align:center;font-size:14px;line-height:1.4;margin-top:8px}
+@media(max-width:560px){.leaderboardSection{width:100%}.leaderboardTable th,.leaderboardTable td{padding:8px 6px}.leaderboardTitle h2{font-size:20px}}
+</style></body>
+</html>
