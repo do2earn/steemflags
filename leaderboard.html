@@ -69,10 +69,13 @@ loadLeaderboardPage().catch(error=>{console.error(error);window.dispatchEvent(ne
 .leaderboardTitle{display:flex;align-items:center;gap:6px}
 .leaderboardTitle .trophy{line-height:1}
 .leaderboardTitle h2{margin:0}
-.leaderboardTable{width:100%;border-collapse:separate;border-spacing:0 7px}
-.leaderboardTable th,.leaderboardTable td{padding:9px}
-.leaderboardTable td:last-child{text-align:right}
-.leaderboardUser{display:flex;align-items:center;gap:8px}
+.leaderboardTable{width:100%;max-width:100%;table-layout:fixed;border-collapse:separate;border-spacing:0 7px}
+.leaderboardTable th,.leaderboardTable td{padding:9px;box-sizing:border-box;overflow:hidden}
+.leaderboardTable th:first-child,.leaderboardTable td:first-child{width:52px;text-align:center}
+.leaderboardTable th:nth-child(2),.leaderboardTable td:nth-child(2){width:auto}
+.leaderboardTable th:last-child,.leaderboardTable td:last-child{width:105px;text-align:right;white-space:nowrap}
+.leaderboardUser{display:flex;align-items:center;gap:8px;min-width:0;width:100%;overflow:hidden}
+.leaderboardUser span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .leaderboardAvatar{width:32px;height:32px;border-radius:50%;object-fit:cover;border:1px solid #888;box-sizing:border-box}.leaderboardFictionalFlag{height:32px;width:auto;object-fit:contain;border:1px solid #888;display:block;flex:0 0 auto}
 .rewardPool{width:100%;margin:12px 0 16px;box-sizing:border-box}
 .rewardPoolInner{width:100%;box-sizing:border-box;padding:10px 13px;border:1px solid rgba(255,255,255,.16);border-radius:11px;background:rgba(255,255,255,.025);opacity:.72;pointer-events:none;user-select:none;color:#888}
@@ -81,6 +84,6 @@ loadLeaderboardPage().catch(error=>{console.error(error);window.dispatchEvent(ne
 .rewardPoolHeading{font-size:16px;line-height:1.35;font-weight:700;margin:0 0 7px;text-align:left}
 .rewardPoolLine{font-size:13px;line-height:1.4;margin:3px 0;text-align:left}
 .rewardPoolComingSoon{color:#ff3b30;font-weight:800;text-align:center;font-size:14px;line-height:1.4;margin-top:8px}
-@media(max-width:560px){.leaderboardSection{width:100%}.leaderboardTable th,.leaderboardTable td{padding:8px 6px}.leaderboardTitle h2{font-size:20px}}
+@media(max-width:560px){.leaderboardSection{width:100%;max-width:100%;overflow:hidden}.leaderboardTable{font-size:14px;border-spacing:0 5px}.leaderboardTable th,.leaderboardTable td{padding:7px 4px}.leaderboardTable th:first-child,.leaderboardTable td:first-child{width:42px}.leaderboardTable th:last-child,.leaderboardTable td:last-child{width:88px}.leaderboardUser{gap:5px}.leaderboardAvatar,.leaderboardFictionalFlag{width:32px;height:32px;flex:0 0 32px}.leaderboardTitle h2{font-size:20px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}}
 </style></body>
 </html>
