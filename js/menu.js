@@ -11,14 +11,14 @@ const STATIC_TRANSLATIONS={
  uk:{signup:'Немає облікового запису Steem?',create:'Створіть його безкоштовно зараз.',leaderboard:'Таблиця лідерів Steem Flags',pool:'Щотижневий пул нагород $STEEM',amount:'Сума: 20 ~ 100 $STEEM',top5:'Розподіляється між 5 найкращими гравцями таблиці лідерів',coming:'⚠️ Незабаром',flag:'Прапор країни'},ko:{signup:'Steem 계정이 없으신가요?',create:'지금 무료로 만드세요.',leaderboard:'Steem Flags 리더보드',pool:'주간 $STEEM 보상 풀',amount:'금액: 20 ~ 100 $STEEM',top5:'리더보드 상위 5명의 플레이어에게 분배됩니다',coming:'⚠️ 곧 제공됩니다',flag:'국가 국기'}
 };
 const MENU_TRANSLATIONS={
- en:{home:'Home',buyEnergy:'Buy ⚡Energy',earnD2E:'Earn D2E',joinSponsors:'Join Sponsors',about:'About Steem Flags',logout:'Logout'},
- fa:{home:'خانه',buyEnergy:'خرید ⚡انرژی',earnD2E:'کسب D2E',joinSponsors:'پیوستن به حامیان',about:'درباره استیم فلگز',logout:'خروج'},
- es:{home:'Inicio',buyEnergy:'Comprar ⚡Energía',earnD2E:'Ganar D2E',joinSponsors:'Unirse a patrocinadores',about:'Acerca de Steem Flags',logout:'Cerrar sesión'},
- ur:{home:'ہوم',buyEnergy:'⚡توانائی خریدیں',earnD2E:'D2E کمائیں',joinSponsors:'اسپانسرز میں شامل ہوں',about:'Steem Flags کے بارے میں',logout:'لاگ آؤٹ'},
- hi:{home:'होम',buyEnergy:'⚡ऊर्जा खरीदें',earnD2E:'D2E कमाएँ',joinSponsors:'प्रायोजकों से जुड़ें',about:'Steem Flags के बारे में',logout:'लॉग आउट'},
- bn:{home:'হোম',buyEnergy:'⚡এনার্জি কিনুন',earnD2E:'D2E উপার্জন করুন',joinSponsors:'স্পনসরদের সাথে যোগ দিন',about:'Steem Flags সম্পর্কে',logout:'লগ আউট'},
- zh:{home:'首页',buyEnergy:'购买 ⚡能量',earnD2E:'赚取 D2E',joinSponsors:'加入赞助商',about:'关于 Steem Flags',logout:'退出登录'},
- uk:{home:'Головна',buyEnergy:'Купити ⚡енергію',earnD2E:'Заробити D2E',joinSponsors:'Приєднатися до спонсорів',about:'Про Steem Flags',logout:'Вийти'},ko:{home:'홈',buyEnergy:'⚡에너지 구매',earnD2E:'D2E 획득',joinSponsors:'스폰서 참여',about:'Steem Flags 정보',logout:'로그아웃'}
+ en:{home:'Home',startGame:'Start Game',leaderboard:'🏆 Leaderboard',buyEnergy:'Buy ⚡Energy',earnD2E:'Earn D2E',joinSponsors:'Join Sponsors',about:'About Steem Flags',logout:'Logout'},
+ fa:{home:'خانه',startGame:'شروع بازی',leaderboard:'🏆 لیدربورد',buyEnergy:'خرید ⚡انرژی',earnD2E:'کسب D2E',joinSponsors:'پیوستن به حامیان',about:'درباره استیم فلگز',logout:'خروج'},
+ es:{home:'Inicio',startGame:'Iniciar juego',leaderboard:'🏆 Clasificación',buyEnergy:'Comprar ⚡Energía',earnD2E:'Ganar D2E',joinSponsors:'Unirse a patrocinadores',about:'Acerca de Steem Flags',logout:'Cerrar sesión'},
+ ur:{home:'ہوم',startGame:'گیم شروع کریں',leaderboard:'🏆 لیڈر بورڈ',buyEnergy:'⚡توانائی خریدیں',earnD2E:'D2E کمائیں',joinSponsors:'اسپانسرز میں شامل ہوں',about:'Steem Flags کے بارے میں',logout:'لاگ آؤٹ'},
+ hi:{home:'होम',startGame:'गेम शुरू करें',leaderboard:'🏆 लीडरबोर्ड',buyEnergy:'⚡ऊर्जा खरीदें',earnD2E:'D2E कमाएँ',joinSponsors:'प्रायोजकों से जुड़ें',about:'Steem Flags के बारे में',logout:'लॉग आउट'},
+ bn:{home:'হোম',startGame:'গেম শুরু করুন',leaderboard:'🏆 লিডারবোর্ড',buyEnergy:'⚡এনার্জি কিনুন',earnD2E:'D2E উপার্জন করুন',joinSponsors:'স্পনসরদের সাথে যোগ দিন',about:'Steem Flags সম্পর্কে',logout:'লগ আউট'},
+ zh:{home:'首页',startGame:'开始游戏',leaderboard:'🏆 排行榜',buyEnergy:'购买 ⚡能量',earnD2E:'赚取 D2E',joinSponsors:'加入赞助商',about:'关于 Steem Flags',logout:'退出登录'},
+ uk:{home:'Головна',startGame:'Почати гру',leaderboard:'🏆 Таблиця лідерів',buyEnergy:'Купити ⚡енергію',earnD2E:'Заробити D2E',joinSponsors:'Приєднатися до спонсорів',about:'Про Steem Flags',logout:'Вийти'},ko:{home:'홈',startGame:'게임 시작',leaderboard:'🏆 리더보드',buyEnergy:'⚡에너지 구매',earnD2E:'D2E 획득',joinSponsors:'스폰서 참여',about:'Steem Flags 정보',logout:'로그아웃'}
 };
 function orderLanguageOptions(select,selected){const order=new Map(LANGUAGE_OPTIONS.map((option,index)=>[option.value,index]));[...select.options].sort((a,b)=>{if(a.value===selected)return -1;if(b.value===selected)return 1;return (order.get(a.value)??999)-(order.get(b.value)??999)}).forEach(option=>select.appendChild(option))}
 function translateMenu(lang){const m=MENU_TRANSLATIONS[lang]||MENU_TRANSLATIONS.en;Object.entries(m).forEach(([key,value])=>{const el=document.querySelector(`#menu [data-menu-label="${key}"]`);if(el)el.textContent=value})}
