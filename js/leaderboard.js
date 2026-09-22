@@ -27,6 +27,9 @@ async function readLeaderboard(){
 function renderLeaderboard(accounts){
   const body=document.getElementById('leaderboardBody');if(!body)return;
   accounts.sort((a,b)=>(b.D2E-a.D2E)||String(a.Username).localeCompare(String(b.Username)));
+  const section=document.getElementById('leaderboardSection');
+  const limit=Math.max(1,Number(section?.dataset.limit)||accounts.length);
+  accounts=accounts.slice(0,limit);
   body.innerHTML=accounts.map((a,i)=>{const u=String(a.Username||'—'),d=Math.max(0,Number(a.D2E)||0),medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':String(i+1);return `<tr><td>${medal}</td><td><div class="leaderboardUser"><img class="leaderboardAvatar" src="${avatarUrl(u)}" alt="@${escapeHtml(u)}" loading="lazy" onerror="this.style.visibility='hidden'"><span>@${escapeHtml(u)}</span></div></td><td>${d.toLocaleString()}</td></tr>`}).join('')||'<tr><td colspan="3" class="muted">No players yet.</td></tr>';
 }
 
