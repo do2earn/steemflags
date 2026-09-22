@@ -6,7 +6,7 @@ function escapeHtml(value){return String(value).replace(/[&<>\\'\"]/g,c=>({'&':'
 async function readLeaderboard(){
   const section=document.getElementById('leaderboardSection');
   const limit=Math.max(1,Number(section?.dataset.limit)||100);
-  const url=`${API_BASE}/api/leaderboard?limit=${limit}&_=${Date.now()}`;
+  const url=`${API_BASE}/api/accounts?limit=${limit}&_=${Date.now()}`;
   const controller=new AbortController();
   const timer=setTimeout(()=>controller.abort(),10000);
   try{
