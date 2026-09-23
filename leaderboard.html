@@ -18,13 +18,13 @@ import {getStoredUsername,loadState,refreshDailyEnergy,syncPurchasedEnergy} from
 import {loadMenu} from './js/menu.js?v=20260820-05';
 import {loadAssetBar as loadSharedAssetBar,refreshAssetBar} from './js/asset-bar.js?v=20260826-assetbar-04';
 import {getLanguage,t} from './js/i18n.js';
-import './js/leaderboard.js?v=20260922-leaderboard-10';
+import './js/leaderboard.js?v=20260923-fictional-flag-01';
 
-function renderLeaderboardPage(){
+function renderLeaderboardPage(){/* unchanged */ 
  const lang=getLanguage();
  document.documentElement.lang=lang;
  document.documentElement.dir=['fa','ur'].includes(lang)?'rtl':'ltr';
- document.title=(lang==='fa'?'لیدربورد Steem Flags':lang==='ur'?'Steem Flags لیڈر بورڈ':lang==='zh'?'Steem Flags 排行榜':lang==='ko'?'Steem Flags 리더보드':lang==='hi'?'Steem Flags लीडरबोर्ड':lang==='bn'?'Steem Flags লিডারবোর্ড':lang==='es'?'Clasificación de Steem Flags':'Steem Flags Leaderboard');
+ document.title=(lang==='fa'?'لیدربورد Steem Flags':lang==='ur'?'Steem Flags لیڈر بورڈ':lang==='zh'?'Steem Flags 排行榜':lang==='ko'?'Steem Flags 리더보드':lang==='hi'?'Steem Flags लीडرबورد':lang==='bn'?'Steem Flags লিডারবোর্ড':lang==='es'?'Clasificación de Steem Flags':'Steem Flags Leaderboard');
  const title=lang==='en'?'Steem Flags Leaderboard':t('leaderboardTitle',lang);
  const main=document.querySelector('main.appShell');
  if(!main)return;
@@ -84,6 +84,6 @@ loadLeaderboardPage().catch(error=>{console.error(error);window.dispatchEvent(ne
 .rewardPoolHeading{font-size:16px;line-height:1.35;font-weight:700;margin:0 0 7px;text-align:left}
 .rewardPoolLine{font-size:13px;line-height:1.4;margin:3px 0;text-align:left}
 .rewardPoolComingSoon{color:#ff3b30;font-weight:800;text-align:center;font-size:14px;line-height:1.4;margin-top:8px}
-@media(max-width:560px){.leaderboardSection{width:100%;max-width:100%;overflow:hidden}.leaderboardTable{font-size:14px;border-spacing:0 5px}.leaderboardTable th,.leaderboardTable td{padding:7px 4px}.leaderboardTable th:first-child,.leaderboardTable td:first-child{width:42px}.leaderboardTable th:last-child,.leaderboardTable td:last-child{width:88px.leaderboardUser{gap:5px}.leaderboardAvatar{width:32px;height:32px;flex:0 0 32px}.leaderboardFictionalFlag{height:32px;width:auto;flex:0 0 auto}.leaderboardTitle h2{font-size:20px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}}
+@media(max-width:560px){.leaderboardSection{width:100%;max-width:100%;overflow:hidden}.leaderboardTable{font-size:14px;border-spacing:0 5px}.leaderboardTable th,.leaderboardTable td{padding:7px 4px}.leaderboardTable th:first-child,.leaderboardTable td:first-child{width:42px}.leaderboardTable th:last-child,.leaderboardTable td:last-child{width:88px}.leaderboardUser{gap:5px}.leaderboardAvatar{width:32px;height:32px;flex:0 0 32px}.leaderboardFictionalFlag{height:32px;width:auto;flex:0 0 auto}.leaderboardTitle h2{font-size:20px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}}
 </style></body>
 </html>
