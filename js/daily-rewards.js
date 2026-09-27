@@ -30,6 +30,14 @@ function flagImageUrl(flag){
   const code=FLAG_CODES.get(String(flag||'').trim());
   return code?'https://raw.githubusercontent.com/hampusborgos/country-flags/master/svg/'+code+'.svg':'';
 }
+export async function claimDailyReward(username){
+  const name=String(username||'').trim().toLowerCase();
+  if(!name)return null;
+  const response=await fetch(API_BASE+'/api/daily-reward/claim',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:name}),cache:'no-store'});
+  const data=await response.json().catch(()=>null);
+  if(!response.ok||!data?.success)throw Error(data?.error||'DAILY_REWARD_FAILED');
+  return data;
+}
 function escapeHtml(value){
   return String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
