@@ -58,6 +58,22 @@ export async function loadMenu(){
     link.setAttribute('href',loggedIn?link.dataset.originalHref:'./index.html');
   });
 
+  function syncAuthMenu(){
+    let isLoggedIn=false;
+    try{
+      const session=JSON.parse(localStorage.getItem('steemFlagsAuthSession')||'null');
+      const legacy=localStorage.getItem('steemflags.username');
+      isLoggedIn=!!(session?.username||legacy);
+    }catch{}
+    if(logoutLink)logoutLink.hidden=!isLoggedIn;
+    if(loginLink)loginLink.hidden=isLoggedIn;
+    authLinks.forEach(link=>{
+      if(!link.dataset.originalHref)link.dataset.originalHref=link.getAttribute('href')||'./';
+      link.setAttribute('href',isLoggedIn?link.dataset.originalHref:'./index.html');
+    });
+  }
+  window.addEventListener('steemflags:auth-changed',syncAuthMenu);
+
   function positionElements(){
     const rtl=document.documentElement.dir==='rtl';
     const edge='max(12px, 4vw)';
@@ -99,6 +115,8 @@ export async function loadMenu(){
     menuButton.setAttribute('aria-expanded',String(!menu.hidden));
     if(!menu.hidden)positionElements();
   };
+
+  syncAuthMenu();
 
   menu.addEventListener('click',event=>{
     const link=event.target.closest('[data-action]');
