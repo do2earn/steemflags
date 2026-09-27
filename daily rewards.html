@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#080d1a">
+<meta name="description" content="Daily Rewards - Steem Flags">
+<title>Daily Rewards - Steem Flags</title>
+<link rel="stylesheet" href="css/style.css?v=20260922-flag-size-01">
+<link rel="stylesheet" href="css/preloader.css?v=20260826-01">
+<script src="js/preloader.js?v=20260826-01" defer></script>
+<script src="js/d2e-logo.js?v=20260825-02" defer></script>
+</head>
+<body>
+<div id="app"></div>
+<script type="module">
+import {loadMenu} from './js/menu.js?v=20260927-menu-syntax-fix-02';
+import {loadAssetBar as loadSharedAssetBar,refreshAssetBar} from './js/asset-bar.js?v=20260826-assetbar-04';
+import {getLanguage} from './js/i18n.js';
+import {showFlagSetting} from './js/flag-setting.js?v=20260923-flag-setting-01';
+
+const API_BASE='https://steemflags.mehdiq.workers.dev';
+const SESSION_KEY='steemFlagsAuthSession';
+const FLAG_CODES=new Map();
+
+async function fetchAccount(username){
+  const response=await fetch(API_BASE+'/api/account?username='+encodeURIComponent(username),{cache:'no-store'});
+  if(!response.ok)throw Error('ACCOUNT_API_'+response.status);
+  const data=await response.json();
+  if(!data?.success||!data.account)throw Error('ACCOUNT_API_INVALID');
+  return data.account;
+}
+
+async function fetchFlagPlayers(flag){
+  const response=await fetch(API_BASE+'/api/accounts?limit=10000&_='+Date.now(),{cache:'no-store',headers:{Accept:'application/json'}});
+  if(!response.ok)throw Error('ACCOUNTS_API_'+response.status);
+  const data=await response.json();
+  if(!data?.success)throw Error('ACCOUNTS_API_'+(data?.error||'FAILED'));
+  const rows=Array.isArray(data.accounts)?data.accounts:(Array.isArray(data.leaderboard)?data.leaderboard:[]);
+  const wanted=String(flag||'').trim();
+  return rows.filter(row=>String(row.Flag??row.flag??'').trim()===wanted).length;
+}
+
+function readUsername(){
+  try{
+    const session=JSON.parse(localStorage.getItem(SESSION_KEY)||'null');
+    return String(session?.username||'').trim().toLowerCase();
+  }catch{return ''}
+}
+
+function flagImageUrl(flag){
+  const code=FLAG_CODES.get(String(flag||'').trim());
+  return code?'https://raw.githubusercontent.com/hampusborgos/country-flags/master/svg/'+code+'.svg':'';
+}
+
+function escapeHtml(value){
+  return String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+async function loadFlagCodes(){
+  try{
+    const module=await import('./data/countries.js');
+    for(const [name,,code] of module.COUNTRIES)FLAG_CODES.set(name,code);
+  }catch{}
+}
+
+function renderLoading(){
+  const main=document.querySelector('main.appShell');
+  if(main)main.innerHTML='<section class="dailyRewardsCard card"><h1>📅 Daily Rewards</h1><p class="muted">Loading daily rewards…</p></section>';
+}
+
+function renderLoginRequired(){
+  const main=document.querySelector('main.appShell');
+  if(!main)return;
+  main.innerHTML='<section class="dailyRewardsCard card"><h1>📅 Daily Rewards</h1><p>❌ Please login to view your daily rewards.</p><a class="primary dailyRewardsButton" href="./index.html">Login</a></section>';
+}
+
+function renderNoFlag(main){
+  main.innerHTML='<section class="dailyRewardsCard card">'+
+    '<h1>📅 Daily Rewards</h1>'+
+    '<p class="dailyRewardLine">❌ You have no flag. <button id="setFlagButton" class="dailyFlagButton" type="button">Set Your Flag</button></p>'+
+    '<p class="dailyRewardLine">❌ So you won\'t earn the daily rewards.</p>'+
+    '</section>';
+  document.getElementById('setFlagButton').onclick=async()=>{
+    const updated=await showFlagSetting(username);
+    if(updated?.Flag||updated?.flag)renderDailyRewards();
+  };
+}
+
+async function renderDailyRewards(){
+  const main=document.querySelector('main.appShell');
+  if(!main)return;
+  const username=readUsername();
+  if(!username){renderLoginRequired();return;}
+  renderLoading();
+  try{
+    const account=await fetchAccount(username);
+    const flag=String(account.Flag??account.flag??'').trim();
+    if(!flag){renderNoFlag(main);return;}
+    const count=await fetchFlagPlayers(flag);
+    const image=flagImageUrl(flag);
+    const imageHtml=image
+      ? '<img class="dailyFlagImage" src="'+image+'" alt="'+escapeHtml(flag)+' flag" loading="lazy">'
+      : '<span class="dailyFlagFallback" aria-label="'+escapeHtml(flag)+' flag">'+escapeHtml(flag)+'</span>';
+    main.innerHTML='<section class="dailyRewardsCard card">'+
+      '<h1>📅 Daily Rewards</h1>'+
+      '<p class="dailyRewardLine">✅ '+imageHtml+' is your flag. <button id="changeFlagButton" class="dailyFlagButton" type="button">Change Your Flag</button></p>'+
+      '<p class="dailyRewardLine">ℹ️ <strong>'+count.toLocaleString()+'</strong> players use this flag.</p>'+
+      '<p class="dailyRewardLine">✅ So you will earn <strong>'+count.toLocaleString()+' D2E</strong> daily.</p>'+
+      '</section>';
+    document.getElementById('changeFlagButton').onclick=async()=>{
+      const updated=await showFlagSetting(username,account);
+      if(updated?.Flag||updated?.flag)renderDailyRewards();
+    };
+  }catch(error){
+    console.error('Daily Rewards load failed:',error);
+    main.innerHTML='<section class="dailyRewardsCard card"><h1>📅 Daily Rewards</h1><p class="feedback bad">Unable to load daily rewards. Please refresh the page.</p></section>';
+  }
+}
+
+async function loadPage(){
+  const app=document.getElementById('app');
+  const response=await fetch('./components/app-shell.html?v=20260927-daily-rewards-01',{cache:'no-store'});
+  if(!response.ok)throw Error('Unable to load app shell.');
+  app.innerHTML=await response.text();
+  ['loginView','homeView','leaderboardSection','gameView'].forEach(id=>document.getElementById(id)?.remove());
+  const main=document.querySelector('main.appShell');
+  if(main)main.innerHTML='<section class="dailyRewardsCard card"><h1>📅 Daily Rewards</h1><p class="muted">Loading daily rewards…</p></section>';
+  await loadSharedAssetBar();
+  await loadFlagCodes();
+  const username=readUsername();
+  if(username)await refreshAssetBar(username);
+  await loadMenu();
+  const lang=getLanguage();
+  document.documentElement.lang=lang;
+  document.documentElement.dir=['fa','ur'].includes(lang)?'rtl':'ltr';
+  await renderDailyRewards();
+  window.dispatchEvent(new CustomEvent('steemflags:ready'));
+}
+loadPage().catch(error=>{
+  console.error(error);
+  const main=document.querySelector('main.appShell');
+  if(main)main.innerHTML='<section class="dailyRewardsCard card"><h1>📅 Daily Rewards</h1><p class="feedback bad">Unable to load daily rewards. Please refresh the page.</p></section>';
+});
+</script>
+<style>
+.dailyRewardsCard{width:100%;max-width:680px;margin:0 auto;box-sizing:border-box;border-radius:18px}
+.dailyRewardsCard h1{text-align:center;margin:0 0 20px;font-size:24px}
+.dailyRewardLine{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px;margin:14px 0;line-height:1.55;text-align:center}
+.dailyFlagImage{height:32px;width:auto;max-width:120px;object-fit:contain;border:1px solid #888;border-radius:2px;vertical-align:middle}
+.dailyFlagFallback{font-weight:700}
+.dailyFlagButton,.dailyRewardsButton{display:inline-block;padding:9px 13px;border:0;border-radius:9px;font-weight:800;font-size:14px;cursor:pointer;text-decoration:none;box-sizing:border-box}
+.dailyFlagButton{background:#5b7cfa;color:#fff}
+.dailyFlagButton:hover{background:#4f70ed}
+.dailyRewardsButton{width:100%;text-align:center;background:#5b7cfa;color:#fff}
+.feedback.bad{color:#ff6b6b}
+</style>
+</body>
+</html>
