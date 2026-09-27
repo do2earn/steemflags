@@ -98,7 +98,15 @@ async function renderDailyRewards(){
     main.innerHTML='<section class="dailyRewardsCard card"><h1>📅 Daily Rewards</h1><p class="feedback bad">Unable to load daily rewards. Please refresh the page.</p></section>';
   }
 }
+const isEmbed=new URLSearchParams(location.search).get('embed')==='1';
+
 async function loadPage(){
+  if(isEmbed){
+    document.body.innerHTML='<main class="appShell"><section class="dailyRewardsCard card"><h1>📅 Daily Rewards</h1><p class="muted">Loading daily rewards…</p></section></main>';
+    await loadFlagCodes();
+    await renderDailyRewards();
+    return;
+  }
   const app=document.getElementById('app');
   const response=await fetch('./components/app-shell.html?v=20260927-daily-rewards-01',{cache:'no-store'});
   if(!response.ok)throw Error('Unable to load app shell.');
