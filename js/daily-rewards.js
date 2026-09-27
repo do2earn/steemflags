@@ -39,10 +39,10 @@ async function loadFlagCodes(){
   for(const [name,,code] of module.COUNTRIES)FLAG_CODES.set(name,code);
 }
 function loading(container){
-  container.innerHTML='<section class="dailyRewardsCard card"><h2>📅 Daily Rewards</h2><p class="muted">Loading daily rewards…</p></section>';
+  container.innerHTML='<section class="dailyRewardsCard card"><h2>📅 Daily Rewards</h2><hr><p class="muted">Loading daily rewards…</p></section>';
 }
 function noFlag(container,username){
-  container.innerHTML='<section class="dailyRewardsCard card"><h2>📅 Daily Rewards</h2><p class="dailyRewardLine">❌ You have no flag. <button id="setFlagButton" class="dailyFlagButton" type="button">Set Your Flag</button></p><p class="dailyRewardLine">❌ So you won\'t earn the daily rewards.</p></section>';
+  container.innerHTML='<section class="dailyRewardsCard card"><h2>📅 Daily Rewards</h2><hr><p class="dailyRewardLine">❌ You have no flag. <button id="setFlagButton" class="dailyFlagButton" type="button">Set Your Flag</button></p><p class="dailyRewardLine">❌ So you won\'t earn the daily rewards.</p></section>';
   document.getElementById('setFlagButton')?.addEventListener('click',async()=>{
     const updated=await showFlagSetting(username);
     if(updated?.Flag||updated?.flag)renderDailyRewards(container);
@@ -52,7 +52,7 @@ export async function renderDailyRewards(container){
   if(!container)return;
   const username=readUsername();
   if(!username){
-    container.innerHTML='<section class="dailyRewardsCard card"><h2>📅 Daily Rewards</h2><p>❌ Please login to view your daily rewards.</p></section>';
+    container.innerHTML='<section class="dailyRewardsCard card"><h2>📅 Daily Rewards</h2><hr><p>❌ Please login to view your daily rewards.</p></section>';
     return;
   }
   loading(container);
@@ -64,13 +64,13 @@ export async function renderDailyRewards(container){
     const count=await fetchFlagPlayers(flag);
     const image=flagImageUrl(flag);
     const imageHtml=image?'<img class="dailyFlagImage" src="'+image+'" alt="'+escapeHtml(flag)+' flag" loading="lazy">':'<span class="dailyFlagFallback" aria-label="'+escapeHtml(flag)+' flag">'+escapeHtml(flag)+'</span>';
-    container.innerHTML='<section class="dailyRewardsCard card"><h2>📅 Daily Rewards</h2><p class="dailyRewardLine">✅ '+imageHtml+' is your flag. <button id="changeFlagButton" class="dailyFlagButton" type="button">Change Your Flag</button></p><p class="dailyRewardLine">ℹ️ <strong>'+count.toLocaleString()+'</strong> players use this flag.</p><p class="dailyRewardLine">✅ So you will earn <strong>'+count.toLocaleString()+' D2E</strong> daily.</p></section>';
+    container.innerHTML='<section class="dailyRewardsCard card"><h2>📅 Daily Rewards</h2><hr><p class="dailyRewardLine">✅ '+imageHtml+' is your flag. <button id="changeFlagButton" class="dailyFlagButton" type="button">Change Your Flag</button></p><p class="dailyRewardLine">ℹ️ <strong>'+count.toLocaleString()+'</strong> players use this flag.</p><p class="dailyRewardLine">✅ So you will earn <strong>+'+count.toLocaleString()+' D2E</strong> daily</p></section>';
     document.getElementById('changeFlagButton')?.addEventListener('click',async()=>{
       const updated=await showFlagSetting(username,account);
       if(updated?.Flag||updated?.flag)renderDailyRewards(container);
     });
   }catch(error){
     console.error('Daily Rewards load failed:',error);
-    container.innerHTML='<section class="dailyRewardsCard card"><h2>📅 Daily Rewards</h2><p class="feedback bad">Unable to load daily rewards. Please refresh the page.</p></section>';
+    container.innerHTML='<section class="dailyRewardsCard card"><h2>📅 Daily Rewards</h2><hr><p class="feedback bad">Unable to load daily rewards. Please refresh the page.</p></section>';
   }
 }
