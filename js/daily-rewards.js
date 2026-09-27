@@ -72,7 +72,7 @@ export async function renderDailyRewards(container){
     const count=await fetchFlagPlayers(flag);
     const image=flagImageUrl(flag);
     const imageHtml=image?'<img class="dailyFlagImage" src="'+image+'" alt="'+escapeHtml(flag)+' flag" loading="lazy">':'<span class="dailyFlagFallback" aria-label="'+escapeHtml(flag)+' flag">'+escapeHtml(flag)+'</span>';
-    container.innerHTML='<section class="dailyRewardsCard card"><h2>📅 Daily Rewards</h2><hr><p class="dailyRewardLine">✅ '+imageHtml+' is your flag. <button id="changeFlagButton" class="dailyFlagButton" type="button">Change Your Flag</button></p><p class="dailyRewardLine">ℹ️ <strong>'+count.toLocaleString()+'</strong> players use this flag.</p><p class="dailyRewardLine">✅ So you will earn <strong>+'+count.toLocaleString()+' D2E</strong> daily</p></section>';
+    container.innerHTML='<section class="dailyRewardsCard card"><h2>📅 Daily Rewards</h2><hr><p class="dailyRewardLine">✅ '+imageHtml+' is your flag. <button id="changeFlagButton" class="dailyFlagButton" type="button">Change Your Flag</button></p><p class="dailyRewardLine">ℹ️ <strong>'+count.toLocaleString()+'</strong> players use this flag.</p><p class="dailyRewardLine"><strong>✅ So you will receive +'+count.toLocaleString()+' D2E automatically daily.</strong></p></section>';
     document.getElementById('changeFlagButton')?.addEventListener('click',async()=>{
       const updated=await showFlagSetting(username,account);
       if(updated?.Flag||updated?.flag)renderDailyRewards(container);
