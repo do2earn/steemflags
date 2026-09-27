@@ -2,7 +2,7 @@ import { FlagGame } from './game.js';
 import { applyLanguage, getLanguage, t, setLanguage } from './i18n.js';
 import { verifyPostingKey, verifyKeychainLogin } from './steem-auth.js?v=20260906-keychain-01';
 import { saveGameResult } from './reward.js';
-import { loadMenu } from './menu.js?v=20260927-menu-auth-fix-01';
+import { loadMenu } from './menu.js?v=20260927-menu-syntax-fix-02';
 import { showFlagSetting } from './flag-setting.js?v=20260923-flag-setting-01';
 
 const API_BASE='https://steemflags.mehdiq.workers.dev';
