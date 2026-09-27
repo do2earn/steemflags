@@ -132,16 +132,30 @@ loadPage().catch(error=>{
 });
 </script>
 <style>
-.dailyRewardsCard{width:100%;max-width:680px;margin:0 auto;box-sizing:border-box;border-radius:18px}
-.dailyRewardsCard h1{text-align:center;margin:0 0 20px;font-size:24px}
-.dailyRewardLine{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px;margin:14px 0;line-height:1.55;text-align:center}
-.dailyFlagImage{height:32px;width:auto;max-width:none;object-fit:contain;border:1px solid #888;border-radius:2px;vertical-align:middle;box-sizing:border-box}
+.dailyRewardsCard{width:100%;max-width:680px;margin:0 auto;padding:18px 20px;box-sizing:border-box;border-radius:18px;overflow:hidden}
+.dailyRewardsCard h1{text-align:center;margin:0 0 16px;font-size:24px;line-height:1.2}
+.dailyRewardLine{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:7px;margin:11px 0;line-height:1.45;text-align:center}
+.dailyFlagImage{height:32px;width:auto;max-width:100%;object-fit:contain;border:1px solid #888;border-radius:2px;vertical-align:middle;box-sizing:border-box;flex:0 0 auto}
 .dailyFlagFallback{font-weight:700}
-.dailyFlagButton,.dailyRewardsButton{display:inline-block;padding:9px 13px;border:0;border-radius:9px;font-weight:800;font-size:14px;cursor:pointer;text-decoration:none;box-sizing:border-box}
+.dailyFlagButton,.dailyRewardsButton{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:8px 12px;border:0;border-radius:9px;font-weight:800;font-size:14px;cursor:pointer;text-decoration:none;box-sizing:border-box;line-height:1.2}
 .dailyFlagButton{background:#5b7cfa;color:#fff}
 .dailyFlagButton:hover{background:#4f70ed}
 .dailyRewardsButton{width:100%;text-align:center;background:#5b7cfa;color:#fff}
 .feedback.bad{color:#ff6b6b}
+@media(max-width:560px){
+  .dailyRewardsCard{max-width:none;padding:14px 12px;border-radius:14px}
+  .dailyRewardsCard h1{margin-bottom:12px;font-size:21px}
+  .dailyRewardLine{gap:6px;margin:9px 0;font-size:14px;line-height:1.4}
+  .dailyFlagImage{height:32px;max-width:calc(100vw - 32px)}
+  .dailyFlagButton{width:auto;min-height:38px;padding:8px 11px;font-size:13px}
+  .dailyRewardsButton{min-height:42px}
+}
+@media(max-width:380px){
+  .dailyRewardsCard{padding:12px 9px}
+  .dailyRewardsCard h1{font-size:20px}
+  .dailyRewardLine{font-size:13px;gap:5px}
+  .dailyFlagButton{width:100%;margin-top:2px}
+}
 </style>
 </body>
 </html>
