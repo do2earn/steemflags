@@ -34,14 +34,6 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy
 
-      - name: Set all player energy to 3
-        uses: cloudflare/wrangler-action@v4
-        with:
-          workingDirectory: cloudflare
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: d1 execute steemflags --remote --file=migrations/0003_set_daily_energy_to_3.sql
-
       - name: Remove legacy energy_purchases table
         uses: cloudflare/wrangler-action@v4
         with:
