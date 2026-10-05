@@ -33,11 +33,3 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy
-
-      - name: Remove legacy energy_purchases table
-        uses: cloudflare/wrangler-action@v4
-        with:
-          workingDirectory: cloudflare
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: d1 execute steemflags --remote --file=migrations/0002_drop_energy_purchases.sql
