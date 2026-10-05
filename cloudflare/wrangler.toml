@@ -6,3 +6,6 @@ compatibility_date = "2026-08-19"
 binding = "DB"
 database_name = "steemflags"
 database_id = "30c7f54b-5bc6-4fca-b6cf-1a3c319bacfc"
+
+[triggers]
+crons = ["*/5 * * * *"]
