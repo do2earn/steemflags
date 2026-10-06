@@ -31,14 +31,6 @@ function renderLeaderboardPage(){
  main.innerHTML=`<section id="leaderboardSection" class="leaderboardSection" aria-label="🏆 ${title}">
    <div id="leaderboard" class="card leaderboard">
      <div class="leaderboardTitle"><span class="trophy">🏆</span><h2>${title}</h2></div>
-     <div id="rewardPool" class="rewardPool">
-       <div class="rewardPoolInner">
-         <div class="rewardPoolHeading"><span class="rewardPoolEmoji">💰</span> Weekly $STEEM Rewards Pool</div>
-         <div class="rewardPoolLine"><span class="rewardPoolEmoji">✅</span> Amount: 20 ~ 100 $STEEM</div>
-         <div class="rewardPoolLine"><span class="rewardPoolEmoji">✅</span> Distributed to the top 5 gamers on the leaderboard</div>
-         <div class="rewardPoolComingSoon">⚠️ Coming Soon</div>
-       </div>
-     </div>
      <div id="leaderboardStatus" class="muted">Loading leaderboard…</div>
      <div class="leaderboardTableWrap"><table id="leaderboardTable" class="leaderboardTable"><thead><tr><th>Rank</th><th>Player</th><th>D2E Rewards</th></tr></thead><tbody id="leaderboardBody"></tbody></table></div>
    </div>
@@ -77,13 +69,6 @@ loadLeaderboardPage().catch(error=>{console.error(error);window.dispatchEvent(ne
 .leaderboardUser{display:flex;align-items:center;gap:8px;min-width:0;width:100%;overflow:hidden}
 .leaderboardUser span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .leaderboardAvatar{width:32px;height:32px;border-radius:50%;object-fit:cover;border:1px solid #888;box-sizing:border-box}.leaderboardFictionalFlag{height:32px;width:auto;object-fit:contain;border:1px solid #888;display:block;flex:0 0 auto}
-.rewardPool{width:100%;margin:12px 0 16px;box-sizing:border-box}
-.rewardPoolInner{width:100%;box-sizing:border-box;padding:10px 13px;border:1px solid rgba(255,255,255,.16);border-radius:11px;background:rgba(255,255,255,.025);opacity:.72;pointer-events:none;user-select:none;color:#888}
-.rewardPoolHeading,.rewardPoolLine{color:#888}
-.rewardPoolEmoji{filter:grayscale(1);opacity:.75}
-.rewardPoolHeading{font-size:16px;line-height:1.35;font-weight:700;margin:0 0 7px;text-align:left}
-.rewardPoolLine{font-size:13px;line-height:1.4;margin:3px 0;text-align:left}
-.rewardPoolComingSoon{color:#ff3b30;font-weight:800;text-align:center;font-size:14px;line-height:1.4;margin-top:8px}
 @media(max-width:560px){.leaderboardSection{width:100%;max-width:100%;overflow:hidden}.leaderboardTable{font-size:14px;border-spacing:0 5px}.leaderboardTable th,.leaderboardTable td{padding:7px 4px}.leaderboardTable th:first-child,.leaderboardTable td:first-child{width:42px}.leaderboardTable th:last-child,.leaderboardTable td:last-child{width:88px.leaderboardUser{gap:5px}.leaderboardAvatar{width:32px;height:32px;flex:0 0 32px}.leaderboardFictionalFlag{height:32px;width:auto;flex:0 0 auto}.leaderboardTitle h2{font-size:20px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}}
 </style></body>
 </html>
