@@ -30,7 +30,7 @@ function renderLeaderboardPage(){
  if(!main)return;
  main.innerHTML=`<section id="leaderboardSection" class="leaderboardSection" aria-label="🏆 ${title}">
    <div id="leaderboard" class="card leaderboard">
-     <div class="leaderboardTitle"><span class="trophy">🏆</span><h2>${title}</h2></div>
+     <div class="leaderboardTitle"><span class="trophy">🏆</span><h2>${title}</h2></div><hr class="leaderboardTitleHr">
      <div id="leaderboardStatus" class="muted">Loading leaderboard…</div>
      <div class="leaderboardTableWrap"><table id="leaderboardTable" class="leaderboardTable"><thead><tr><th>Rank</th><th>Player</th><th>D2E Rewards</th></tr></thead><tbody id="leaderboardBody"></tbody></table></div>
    </div>
@@ -60,7 +60,7 @@ loadLeaderboardPage().catch(error=>{console.error(error);window.dispatchEvent(ne
 .leaderboard{width:100%;box-sizing:border-box}
 .leaderboardTitle{display:flex;align-items:center;gap:6px}
 .leaderboardTitle .trophy{line-height:1}
-.leaderboardTitle h2{margin:0}
+.leaderboardTitle h2{margin:0}.leaderboardTitleHr{border:0;border-top:1px solid rgba(255,255,255,.16);margin:0 0 16px}
 .leaderboardTable{width:100%;max-width:100%;table-layout:fixed;border-collapse:separate;border-spacing:0 7px}
 .leaderboardTable th,.leaderboardTable td{padding:9px;box-sizing:border-box;overflow:hidden}.leaderboardTable th{text-align:center}
 .leaderboardTable th:first-child,.leaderboardTable td:first-child{width:52px;text-align:center}
