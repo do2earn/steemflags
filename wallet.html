@@ -47,12 +47,14 @@ function renderWallet(username, internal, external){
           ${assetRow('d2e','D2E (Do2Earn)',amount(internal.d2e,0))}
         </div>
         <button class="walletAction secondary" disabled><span>⇄</span> Swap D2E to $STEEM</button>
+        <div class="walletLimit">Minimum Amount: 10,000 D2E<br>Rate: 1,000 D2E = 1 $STEEM</div>
       </div>
       <div class="walletAssetWithAction">
         <div class="walletAsset">
           ${assetRow('steem','$STEEM',amount(internal.steem))}
         </div>
         <button class="walletAction secondary" disabled><span>↗</span> Withdraw $STEEM</button>
+        <div class="walletLimit">Withdrawable Amount: 10 $STEEM in 7 days</div>
       </div>
     </div>
    </article>
@@ -134,14 +136,15 @@ loadWalletPage().catch(error=>{console.error(error);window.dispatchEvent(new Cus
 .walletLabel{font-size:11px;letter-spacing:1.3px;opacity:.55;font-weight:800}
 .walletHeaderIcon{font-size:24px;opacity:.65}
 .walletAssets{margin-top:3px}
-.walletAsset{display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:57px;padding:8px 3px;border-bottom:1px solid rgba(255,255,255,.10);box-sizing:border-box}
+.walletAsset{display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:57px;padding:8px 0 8px 3px;border-bottom:1px solid rgba(255,255,255,.10);box-sizing:border-box}
 .walletAsset:last-child{border-bottom:0}
 .walletAssetWithAction>.walletAsset{border-bottom:0;padding-bottom:6px}
 .walletAssetWithAction>.walletAction{margin:0 0 8px}
+.walletLimit{text-align:center;font-size:11px;line-height:1.5;opacity:.52;margin:-2px 0 12px}
 .assetName{display:flex;align-items:center;gap:11px;min-width:0}
 .assetName>span:last-child{overflow-wrap:anywhere}
 .assetIcon{display:flex;align-items:center;justify-content:center;width:34px;height:34px;flex:0 0 34px;border-radius:10px;background:rgba(255,255,255,.07);font-size:16px}
-.walletAsset strong{display:flex;align-items:baseline;gap:4px;font-size:19px;white-space:nowrap}
+.walletAsset strong{display:flex;align-items:baseline;gap:4px;font-size:19px;white-space:nowrap;margin-left:auto;text-align:right}
 .walletAsset strong small{font-size:11px;opacity:.55}
 .walletActions{display:flex;flex-direction:column;gap:9px;margin-top:18px;padding-top:2px}
 .walletAction{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;min-height:44px;box-sizing:border-box;text-align:center;padding:9px 13px;border-radius:10px;font-weight:700;text-decoration:none;border:1px solid transparent}
@@ -155,7 +158,7 @@ loadWalletPage().catch(error=>{console.error(error);window.dispatchEvent(new Cus
  .walletHeading{margin-top:3px;margin-bottom:16px}
  .walletCard{padding:17px 13px;border-radius:17px}
  .walletCardHeader h2{font-size:19px}
- .walletAsset{min-height:55px;padding:7px 2px;font-size:15px}
+ .walletAsset{min-height:55px;padding:7px 0 7px 2px;font-size:15px}
  .walletAsset strong{font-size:17px}
  .assetIcon{width:32px;height:32px;flex-basis:32px}
  .walletAction{min-height:44px}
