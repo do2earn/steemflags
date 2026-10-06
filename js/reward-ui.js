@@ -29,7 +29,7 @@ function showRewards(data){
   const adReward=Number(data.adReward)||0;
   const total=gameReward+perfectBonus+adReward;
   lines.innerHTML=`<div class="rewardLine"><span>✅ Quiz Rewards</span><strong>${gameReward>0?'+':''}${gameReward} D2E</strong></div><div class="rewardLine"><span>✅ Rewards for getting all answers correct</span><strong>${perfectBonus>0?'+':''}${perfectBonus} D2E</strong></div><div class="rewardLine"><span>✅ Sponsor Ad Rewards</span><strong>${adReward>0?'+':''}${adReward} D2E</strong></div><div class="rewardLine rewardTotal"><span>💰 Total Rewards</span><strong>${total>0?'+':''}${total} D2E</strong></div>`;
-  if(ad){ad.hidden=false;ad.textContent='📣 Watch a Sponsor Ad for +2 D2E';ad.onclick=()=>{try{sessionStorage.setItem('steemFlagsSponsorContext','game')}catch{}window.location.href='./sponsor-ad.html'}}
+  if(ad){ad.hidden=false;ad.disabled=true;ad.setAttribute('aria-disabled','true');ad.textContent='📣 Watch a Sponsor Ad for +2 D2E';ad.onclick=null;ad.style.background='#6b7280';ad.style.color='#d1d5db';ad.style.cursor='default';ad.style.opacity='0.65'}
   ok.onclick=async()=>{
     if(ok.dataset.busy==='1')return;
     ok.dataset.busy='1';ok.disabled=true;ok.setAttribute('aria-busy','true');
