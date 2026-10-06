@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#080d1a">
+<meta name="description" content="My Wallet - Steem Flags">
+<title>My Wallet - Steem Flags</title>
+<link rel="stylesheet" href="css/style.css?v=20260830-footer-01">
+<link rel="stylesheet" href="css/preloader.css?v=20260826-01">
+<script src="js/preloader.js?v=20260826-01" defer></script>
+<script src="js/d2e-logo.js?v=20260825-02" defer></script>
+</head>
+<body>
+<div id="app"></div>
+<script type="module">
+import {getStoredUsername,loadState,refreshDailyEnergy,syncPurchasedEnergy} from './js/storage.js?v=20260822-about-02';
+import {loadMenu} from './js/menu.js?v=20260820-05';
+import {loadAssetBar as loadSharedAssetBar,refreshAssetBar} from './js/asset-bar.js?v=20260826-assetbar-04';
+
+const API='https://api.steemit.com';
+
+function esc(v){return String(v??'').replace(/[&<>\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[c]));}
+function amount(v,decimals=3){return Number(v||0).toFixed(decimals);}
+
+function renderWallet(username, internal, external){
+ const main=document.querySelector('main.appShell');
+ if(!main)return;
+ main.innerHTML=`<section class="walletContent">
+  <h1>My Wallet</h1>
+  <div class="walletCards">
+   <article class="walletCard">
+    <h2>Internal Wallet</h2>
+    <div class="walletAsset"><span>⚡ Energy</span><strong>${amount(internal.energy,0)}</strong></div>
+    <div class="walletAsset"><span>D2E (Do2Earn)</span><strong>${amount(internal.d2e,0)}</strong></div>
+    <div class="walletAsset"><span>$STEEM</span><strong>${amount(internal.steem)}</strong></div>
+    <div class="walletActions">
+      <a class="primary walletAction" href="shop.html">Buy more ⚡Energy</a>
+      <button class="walletAction secondary" disabled>Swap D2E to $STEEM</button>
+      <button class="walletAction secondary" disabled>Withdraw $STEEM</button>
+    </div>
+   </article>
+   <article class="walletCard">
+    <h2>External Wallet</h2>
+    <div class="walletAsset"><span>$STEEM</span><strong>${amount(external.steem)}</strong></div>
+    <div class="walletAsset"><span>SP (Steem Power)</span><strong>${amount(external.sp)}</strong></div>
+    <div class="walletAsset"><span>$SBD (Steem Based Dollar)</span><strong>${amount(external.sbd)}</strong></div>
+   </article>
+  </div>
+ </section>`;
+}
+
+async function getExternalWallet(username){
+ const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({jsonrpc:'2.0',method:'condenser_api.get_accounts',params:[[username]],id:1}),cache:'no-store'});
+ if(!r.ok)throw new Error('Steem API request failed');
+ const j=await r.json();
+ const a=j?.result?.[0];
+ if(!a)throw new Error('Steem account not found');
+ const vesting=Number(String(a.vesting_shares||'0').split(' ')[0]);
+ const delegated=Number(String(a.delegated_vesting_shares||'0').split(' ')[0]);
+ const received=Number(String(a.received_vesting_shares||'0').split(' ')[0]);
+ const dynamic=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({jsonrpc:'2.0',method:'condenser_api.get_dynamic_global_properties',params:[],id:2}),cache:'no-store'}).then(x=>x.json());
+ const dg=dynamic?.result;
+ const totalVests=Number(String(dg?.total_vesting_shares||'0').split(' ')[0]);
+ const totalFund=Number(String(dg?.total_vesting_fund_steem||'0').split(' ')[0]);
+ const effective=Math.max(0,vesting+received-delegated);
+ const sp=totalVests>0?effective*totalFund/totalVests:0;
+ return {steem:Number(String(a.balance||'0').split(' ')[0]),sbd:Number(String(a.sbd_balance||'0').split(' ')[0]),sp};
+}
+
+async function loadWalletPage(){
+ const app=document.getElementById('app');
+ const response=await fetch('./components/app-shell.html?v=20260904-about-01',{cache:'no-store'});
+ app.innerHTML=await response.text();
+ ['loginView','homeView','leaderboardSection','gameView'].forEach(id=>document.getElementById(id)?.remove());
+ const main=document.querySelector('main.appShell');
+ if(main)main.innerHTML='<section class="walletContent"></section>';
+ const username=getStoredUsername();
+ await loadSharedAssetBar();
+ if(!username){
+   if(main)main.innerHTML='<section class="walletContent"><h1>My Wallet</h1><article class="walletCard walletLogin"><p>Please log in to view your wallet.</p><a class="primary walletAction" href="index.html">Login</a></article></section>';
+   await loadMenu();
+   return;
+ }
+ const state=await syncPurchasedEnergy(refreshDailyEnergy(loadState(username),username),username);
+ await refreshAssetBar(username);
+ const internal={energy:Number(state?.energy||0),d2e:Number(state?.d2e||0),steem:Number(state?.steem||0)};
+ let external={steem:0,sp:0,sbd:0};
+ try{external=await getExternalWallet(username)}catch(error){console.error(error)}
+ renderWallet(username,internal,external);
+ await loadMenu();
+ window.dispatchEvent(new CustomEvent('steemflags:ready'));
+}
+loadWalletPage().catch(error=>{console.error(error);window.dispatchEvent(new CustomEvent('steemflags:ready'))});
+</script>
+<style>
+.walletContent{max-width:760px;margin:0 auto}.walletContent>h1{text-align:center;margin:8px 0 20px}.walletCards{display:flex;flex-direction:column;gap:18px}.walletCard{background:rgba(17,26,48,.94);border:1px solid rgba(255,255,255,.18);border-radius:20px;padding:22px 18px;box-sizing:border-box}.walletCard h2{text-align:center;margin:2px 0 18px}.walletAsset{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 4px;border-bottom:1px solid rgba(255,255,255,.12);font-size:16px}.walletAsset:last-of-type{border-bottom:0}.walletAsset strong{font-size:18px}.walletActions{display:flex;flex-direction:column;gap:10px;margin-top:20px}.walletAction{display:block;width:100%;box-sizing:border-box;text-align:center;padding:10px 14px;border-radius:10px;font-weight:700;text-decoration:none;border:1px solid transparent}.walletAction.secondary{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.12);color:rgba(255,255,255,.5);cursor:not-allowed}.walletLogin{text-align:center}.walletLogin p{margin:4px 0 16px}@media(max-width:560px){.walletContent{width:100%}.walletCard{padding:18px 14px;border-radius:16px}.walletAsset{font-size:15px}.walletAsset strong{font-size:17px}}
+</style>
+</body>
+</html>
