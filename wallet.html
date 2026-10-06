@@ -91,7 +91,19 @@ async function loadWalletPage(){
  }
  const state=await syncPurchasedEnergy(refreshDailyEnergy(loadState(username),username),username);
  await refreshAssetBar(username);
- const internal={energy:Number(state?.energy||0),d2e:Number(state?.d2e||0),steem:Number(state?.steem||0)};
+ let account=null;
+ try{
+   const accountResponse=await fetch(`https://steemflags.mehdiq.workers.dev/api/account?username=${encodeURIComponent(username)}`,{cache:'no-store'});
+   if(accountResponse.ok){
+     const accountData=await accountResponse.json();
+     if(accountData?.success&&accountData.account) account=accountData.account;
+   }
+ }catch(error){console.warn('Wallet account sync failed',error)}
+ const internal={
+   energy:account ? Number(account.Energy||0) : Number(state?.energy||0),
+   d2e:account ? Number(account.D2E||0) : Number(state?.d2e||state?.sf||0),
+   steem:Number(account?.STEEM||state?.steem||0)
+ };
  let external={steem:0,sp:0,sbd:0};
  try{external=await getExternalWallet(username)}catch(error){console.error(error)}
  renderWallet(username,internal,external);
