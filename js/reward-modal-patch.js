@@ -3,8 +3,12 @@ function patchRewardModal(){
   const dialog=document.querySelector('#rewardModal .rewardDialog');
   const sponsor=document.getElementById('sponsorAdButton');
   if(!dialog||!sponsor)return;
-  sponsor.style.background='#5b7cfa';
-  sponsor.style.color='#fff';
+  sponsor.disabled=true;
+  sponsor.setAttribute('aria-disabled','true');
+  sponsor.style.background='#6b7280';
+  sponsor.style.color='#d1d5db';
+  sponsor.style.opacity='0.65';
+  sponsor.style.cursor='default';
   sponsor.style.marginTop='8px';
   let earn=document.getElementById('rewardEarnSteemButton');
   if(!earn){
@@ -12,7 +16,7 @@ function patchRewardModal(){
     earn.id='rewardEarnSteemButton';
     earn.className='rewardEarnSteemButton';
     earn.href='./earnsteem.html';
-    earn.textContent='Earn $STEEM by Steem Flags game';
+    earn.textContent='Earn more $STEEM by Steem Flags';
     earn.target='_self';
     earn.style.display='block';
     earn.style.width='100%';
