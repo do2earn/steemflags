@@ -27,7 +27,7 @@ export async function loadMenu(){
   const container=document.getElementById('menuContainer');
   if(!container)return;
 
-  const url=new URL('../components/menu.html?v=20261006-menu-scroll-01',import.meta.url);
+  const url=new URL('../components/menu.html?v=20261006-menu-scroll-02',import.meta.url);
   const response=await fetch(url.href,{cache:'no-store'});
   if(!response.ok)throw new Error(`Unable to load menu: ${response.status}`);
 
