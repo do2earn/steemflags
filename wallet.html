@@ -20,31 +20,40 @@ import {loadAssetBar as loadSharedAssetBar,refreshAssetBar} from './js/asset-bar
 
 const API='https://api.steemit.com';
 
-function esc(v){return String(v??'').replace(/[&<>\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[c]));}
 function amount(v,decimals=3){return Number(v||0).toFixed(decimals);}
+function assetIcon(type){return type==='energy'?'⚡':type==='d2e'?'◈':'$';}
+
+function assetRow(type,label,value,unit=''){
+ return '<div class="walletAsset"><div class="assetName"><span class="assetIcon '+type+'">'+assetIcon(type)+'</span><span>'+label+'</span></div><strong>'+value+(unit?'<small>'+unit+'</small>':'')+'</strong></div>';
+}
 
 function renderWallet(username, internal, external){
  const main=document.querySelector('main.appShell');
  if(!main)return;
  main.innerHTML=`<section class="walletContent">
-  <h1>My Wallet</h1>
+  <div class="walletHeading"><span class="walletHeadingIcon">👛</span><h1>My Wallet</h1></div>
   <div class="walletCards">
-   <article class="walletCard">
-    <h2>Internal Wallet</h2>
-    <div class="walletAsset"><span>⚡ Energy</span><strong>${amount(internal.energy,0)}</strong></div>
-    <div class="walletAsset"><span>D2E (Do2Earn)</span><strong>${amount(internal.d2e,0)}</strong></div>
-    <div class="walletAsset"><span>$STEEM</span><strong>${amount(internal.steem)}</strong></div>
+   <article class="walletCard internalCard">
+    <div class="walletCardHeader"><div><span class="walletLabel">INTERNAL</span><h2>Internal Wallet</h2></div><span class="walletHeaderIcon">◈</span></div>
+    <div class="walletAssets">
+      ${assetRow('energy','⚡ Energy',amount(internal.energy,0))}
+      ${assetRow('d2e','D2E (Do2Earn)',amount(internal.d2e,0))}
+      ${assetRow('steem','Internal $STEEM',amount(internal.steem))}
+    </div>
     <div class="walletActions">
-      <a class="primary walletAction" href="shop.html">Buy more ⚡Energy</a>
-      <button class="walletAction secondary" disabled>Swap D2E to $STEEM</button>
-      <button class="walletAction secondary" disabled>Withdraw $STEEM</button>
+      <a class="primary walletAction activeAction" href="shop.html"><span>⚡</span> Buy more Energy</a>
+      <button class="walletAction secondary" disabled><span>⇄</span> Swap D2E to $STEEM</button>
+      <button class="walletAction secondary" disabled><span>↗</span> Withdraw $STEEM</button>
     </div>
    </article>
-   <article class="walletCard">
-    <h2>External Wallet</h2>
-    <div class="walletAsset"><span>$STEEM</span><strong>${amount(external.steem)}</strong></div>
-    <div class="walletAsset"><span>SP (Steem Power)</span><strong>${amount(external.sp)}</strong></div>
-    <div class="walletAsset"><span>$SBD (Steem Based Dollar)</span><strong>${amount(external.sbd)}</strong></div>
+   <article class="walletCard externalCard">
+    <div class="walletCardHeader"><div><span class="walletLabel">BLOCKCHAIN</span><h2>External Wallet</h2></div><span class="walletHeaderIcon">⛓</span></div>
+    <div class="walletAssets">
+      ${assetRow('steem','$STEEM',amount(external.steem))}
+      ${assetRow('sp','SP (Steem Power)',amount(external.sp))}
+      ${assetRow('sbd','$SBD (Steem Based Dollar)',amount(external.sbd))}
+    </div>
+    <div class="externalNote">Live balance from the Steem blockchain</div>
    </article>
   </div>
  </section>`;
@@ -53,8 +62,7 @@ function renderWallet(username, internal, external){
 async function getExternalWallet(username){
  const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({jsonrpc:'2.0',method:'condenser_api.get_accounts',params:[[username]],id:1}),cache:'no-store'});
  if(!r.ok)throw new Error('Steem API request failed');
- const j=await r.json();
- const a=j?.result?.[0];
+ const j=await r.json(); const a=j?.result?.[0];
  if(!a)throw new Error('Steem account not found');
  const vesting=Number(String(a.vesting_shares||'0').split(' ')[0]);
  const delegated=Number(String(a.delegated_vesting_shares||'0').split(' ')[0]);
@@ -78,9 +86,8 @@ async function loadWalletPage(){
  const username=getStoredUsername();
  await loadSharedAssetBar();
  if(!username){
-   if(main)main.innerHTML='<section class="walletContent"><h1>My Wallet</h1><article class="walletCard walletLogin"><p>Please log in to view your wallet.</p><a class="primary walletAction" href="index.html">Login</a></article></section>';
-   await loadMenu();
-   return;
+   if(main)main.innerHTML='<section class="walletContent"><div class="walletHeading"><span class="walletHeadingIcon">👛</span><h1>My Wallet</h1></div><article class="walletCard walletLogin"><p>Please log in to view your wallet.</p><a class="primary walletAction" href="index.html">Login</a></article></section>';
+   await loadMenu(); return;
  }
  const state=await syncPurchasedEnergy(refreshDailyEnergy(loadState(username),username),username);
  await refreshAssetBar(username);
@@ -94,7 +101,41 @@ async function loadWalletPage(){
 loadWalletPage().catch(error=>{console.error(error);window.dispatchEvent(new CustomEvent('steemflags:ready'))});
 </script>
 <style>
-.walletContent{max-width:760px;margin:0 auto}.walletContent>h1{text-align:center;margin:8px 0 20px}.walletCards{display:flex;flex-direction:column;gap:18px}.walletCard{background:rgba(17,26,48,.94);border:1px solid rgba(255,255,255,.18);border-radius:20px;padding:22px 18px;box-sizing:border-box}.walletCard h2{text-align:center;margin:2px 0 18px}.walletAsset{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 4px;border-bottom:1px solid rgba(255,255,255,.12);font-size:16px}.walletAsset:last-of-type{border-bottom:0}.walletAsset strong{font-size:18px}.walletActions{display:flex;flex-direction:column;gap:10px;margin-top:20px}.walletAction{display:block;width:100%;box-sizing:border-box;text-align:center;padding:10px 14px;border-radius:10px;font-weight:700;text-decoration:none;border:1px solid transparent}.walletAction.secondary{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.12);color:rgba(255,255,255,.5);cursor:not-allowed}.walletLogin{text-align:center}.walletLogin p{margin:4px 0 16px}@media(max-width:560px){.walletContent{width:100%}.walletCard{padding:18px 14px;border-radius:16px}.walletAsset{font-size:15px}.walletAsset strong{font-size:17px}}
+.walletContent{max-width:760px;margin:0 auto;padding-bottom:20px}
+.walletHeading{display:flex;align-items:center;justify-content:center;gap:10px;margin:6px 0 20px}
+.walletHeading h1{margin:0}
+.walletHeadingIcon{font-size:25px}
+.walletCards{display:flex;flex-direction:column;gap:18px}
+.walletCard{background:rgba(17,26,48,.94);border:1px solid rgba(255,255,255,.18);border-radius:20px;padding:20px 18px;box-sizing:border-box;box-shadow:0 8px 24px rgba(0,0,0,.12)}
+.walletCardHeader{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,.13)}
+.walletCardHeader h2{margin:2px 0 0;font-size:21px}
+.walletLabel{font-size:11px;letter-spacing:1.3px;opacity:.55;font-weight:800}
+.walletHeaderIcon{font-size:24px;opacity:.65}
+.walletAssets{margin-top:3px}
+.walletAsset{display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:57px;padding:8px 3px;border-bottom:1px solid rgba(255,255,255,.10);box-sizing:border-box}
+.walletAsset:last-child{border-bottom:0}
+.assetName{display:flex;align-items:center;gap:11px;min-width:0}
+.assetName>span:last-child{overflow-wrap:anywhere}
+.assetIcon{display:flex;align-items:center;justify-content:center;width:34px;height:34px;flex:0 0 34px;border-radius:10px;background:rgba(255,255,255,.07);font-size:16px}
+.walletAsset strong{display:flex;align-items:baseline;gap:4px;font-size:19px;white-space:nowrap}
+.walletAsset strong small{font-size:11px;opacity:.55}
+.walletActions{display:flex;flex-direction:column;gap:9px;margin-top:18px;padding-top:2px}
+.walletAction{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;min-height:44px;box-sizing:border-box;text-align:center;padding:9px 13px;border-radius:10px;font-weight:700;text-decoration:none;border:1px solid transparent}
+.walletAction.activeAction{box-shadow:0 4px 12px rgba(0,0,0,.12)}
+.walletAction.secondary{background:rgba(255,255,255,.055);border-color:rgba(255,255,255,.10);color:rgba(255,255,255,.43);cursor:not-allowed}
+.externalNote{text-align:center;font-size:11px;opacity:.45;margin-top:13px}
+.walletLogin{text-align:center}
+.walletLogin p{margin:4px 0 16px}
+@media(max-width:560px){
+ .walletContent{width:100%}
+ .walletHeading{margin-top:3px;margin-bottom:16px}
+ .walletCard{padding:17px 13px;border-radius:17px}
+ .walletCardHeader h2{font-size:19px}
+ .walletAsset{min-height:55px;padding:7px 2px;font-size:15px}
+ .walletAsset strong{font-size:17px}
+ .assetIcon{width:32px;height:32px;flex-basis:32px}
+ .walletAction{min-height:44px}
+}
 </style>
 </body>
 </html>
