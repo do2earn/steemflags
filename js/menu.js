@@ -27,7 +27,7 @@ export async function loadMenu(){
   const container=document.getElementById('menuContainer');
   if(!container)return;
 
-  const url=new URL('../components/menu.html?v=20260927-component-auth-01',import.meta.url);
+  const url=new URL('../components/menu.html?v=20261006-menu-scroll-01',import.meta.url);
   const response=await fetch(url.href,{cache:'no-store'});
   if(!response.ok)throw new Error(`Unable to load menu: ${response.status}`);
 
@@ -86,6 +86,11 @@ export async function loadMenu(){
     menu.style.setProperty('position','fixed','important');
     menu.style.setProperty('left',rtl?'auto':edge,'important');
     menu.style.setProperty('right',rtl?edge:'auto','important');
+    menu.style.setProperty('top','12px','important');
+    menu.style.setProperty('bottom','12px','important');
+    menu.style.setProperty('max-height','calc(100vh - 24px)','important');
+    menu.style.setProperty('overflow-y','auto','important');
+    menu.style.setProperty('overflow-x','hidden','important');
   }
 
   const lang=getLanguage();
