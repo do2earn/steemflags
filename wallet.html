@@ -47,14 +47,14 @@ function renderWallet(username, internal, external){
           ${assetRow('d2e','D2E (Do2Earn)',amount(internal.d2e,0))}
         </div>
         <button class="walletAction secondary" disabled><span>⇄</span> Swap D2E to $STEEM</button>
-        <div class="walletLimit">Minimum Amount: 10,000 D2E<br>Rate: 1,000 D2E = 1 $STEEM</div>
+        <div class="walletLimit">ⓘ Min: 10,000 D2E • Rate: 1,000 D2E = 1 $STEEM</div>
       </div>
       <div class="walletAssetWithAction">
         <div class="walletAsset">
           ${assetRow('steem','$STEEM',amount(internal.steem))}
         </div>
         <button class="walletAction secondary" disabled><span>↗</span> Withdraw $STEEM</button>
-        <div class="walletLimit">Withdrawable Amount: 10 $STEEM in 7 days</div>
+        <div class="walletLimit">ⓘ Min: 10 $STEEM • Limit: 10 $STEEM / 7 days</div>
       </div>
     </div>
    </article>
@@ -140,7 +140,7 @@ loadWalletPage().catch(error=>{console.error(error);window.dispatchEvent(new Cus
 .walletAsset:last-child{border-bottom:0}
 .walletAssetWithAction>.walletAsset{border-bottom:0;padding-bottom:6px}
 .walletAssetWithAction>.walletAction{margin:0 0 8px}
-.walletLimit{text-align:center;font-size:11px;line-height:1.5;opacity:.52;margin:-2px 0 12px}
+.walletLimit{text-align:center;font-size:10.5px;line-height:1.5;opacity:.52;margin:-2px 0 12px;white-space:nowrap}
 .assetName{display:flex;align-items:center;gap:11px;min-width:0}
 .assetName>span:last-child{overflow-wrap:anywhere}
 .assetIcon{display:flex;align-items:center;justify-content:center;width:34px;height:34px;flex:0 0 34px;border-radius:10px;background:rgba(255,255,255,.07);font-size:16px}
