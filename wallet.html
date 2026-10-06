@@ -83,7 +83,7 @@ async function loadWalletPage(){
  ['loginView','homeView','leaderboardSection','gameView'].forEach(id=>document.getElementById(id)?.remove());
  const main=document.querySelector('main.appShell');
  if(main)main.innerHTML='<section class="walletContent"></section>';
- const username=getStoredUsername();
+ const username=getStoredUsername() || (()=>{try{return JSON.parse(localStorage.getItem('steemFlagsAuthSession')||'null')?.username||null}catch{return null}})();
  await loadSharedAssetBar();
  if(!username){
    if(main)main.innerHTML='<section class="walletContent"><div class="walletHeading"><span class="walletHeadingIcon">👛</span><h1>My Wallet</h1></div><article class="walletCard walletLogin"><p>Please log in to view your wallet.</p><a class="primary walletAction" href="index.html">Login</a></article></section>';
