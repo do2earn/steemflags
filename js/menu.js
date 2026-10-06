@@ -11,7 +11,7 @@ const STATIC_TRANSLATIONS={
  uk:{signup:'Немає облікового запису Steem?',create:'Створіть його безкоштовно зараз.',leaderboard:'Таблиця лідерів Steem Flags',pool:'Щотижневий пул нагород $STEEM',amount:'Сума: 20 ~ 100 $STEEM',top5:'Розподіляється між 5 найкращими гравцями таблиці лідерів',coming:'⚠️ Незабаром',flag:'Прапор країни'},ko:{signup:'Steem 계정이 없으신가요?',create:'지금 무료로 만드세요.',leaderboard:'Steem Flags 리더보드',pool:'주간 $STEEM 보상 풀',amount:'금액: 20 ~ 100 $STEEM',top5:'리더보드 상위 5명의 플레이어에게 분배됩니다',coming:'⚠️ 곧 제공됩니다',flag:'국가 국기'}
 };
 const MENU_TRANSLATIONS={
- en:{home:'Home',startGame:'Start Game',leaderboard:'🏆 Leaderboard',buyEnergy:'Buy ⚡Energy',earnD2E:'Earn D2E',joinSponsors:'Join Sponsors',about:'About Steem Flags',login:'Login',logout:'Logout'},
+ en:{home:'Home',startGame:'🎮 New Game',dailyRewards:'📅 Daily Rewards',leaderboard:'🏆 Leaderboard',myWallet:'My Wallet',buyEnergy:'🛒 Buy more ⚡Energy',earnD2E:'💎 Earn D2E',earnSteem:'💰 Earn more $STEEM',flagSetting:'🏳️ My Flag Setting',roadMap:'🗺️ Road Map',about:'ℹ️ About',login:'Login',logout:'Logout'},
  fa:{home:'خانه',startGame:'شروع بازی',leaderboard:'🏆 لیدربورد',buyEnergy:'خرید ⚡انرژی',earnD2E:'کسب D2E',joinSponsors:'پیوستن به حامیان',about:'درباره استیم فلگز',login:'ورود',logout:'خروج'},
  es:{home:'Inicio',startGame:'Iniciar juego',leaderboard:'🏆 Clasificación',buyEnergy:'Comprar ⚡Energía',earnD2E:'Ganar D2E',joinSponsors:'Unirse a patrocinadores',about:'Acerca de Steem Flags',login:'Iniciar sesión',logout:'Cerrar sesión'},
  ur:{home:'ہوم',startGame:'گیم شروع کریں',leaderboard:'🏆 لیڈر بورڈ',buyEnergy:'⚡توانائی خریدیں',earnD2E:'D2E کمائیں',joinSponsors:'اسپانسرز میں شامل ہوں',about:'Steem Flags کے بارے میں',login:'لاگ اِن',logout:'لاگ آؤٹ'},
