@@ -36,14 +36,24 @@ function renderWallet(username, internal, external){
    <article class="walletCard internalCard">
     <div class="walletCardHeader"><div><span class="walletLabel">INTERNAL</span><h2>Internal Wallet</h2></div><span class="walletHeaderIcon">◈</span></div>
     <div class="walletAssets">
-      ${assetRow('energy','⚡ Energy',amount(internal.energy,0))}
-      ${assetRow('d2e','D2E (Do2Earn)',amount(internal.d2e,0))}
-      ${assetRow('steem','Internal $STEEM',amount(internal.steem))}
-    </div>
-    <div class="walletActions">
-      <a class="primary walletAction activeAction" href="shop.html"><span>⚡</span> Buy more Energy</a>
-      <button class="walletAction secondary" disabled><span>⇄</span> Swap D2E to $STEEM</button>
-      <button class="walletAction secondary" disabled><span>↗</span> Withdraw $STEEM</button>
+      <div class="walletAssetWithAction">
+        <div class="walletAsset">
+          ${assetRow('energy','⚡ Energy',amount(internal.energy,0))}
+        </div>
+        <a class="primary walletAction activeAction" href="shop.html"><span>⚡</span> Buy more Energy</a>
+      </div>
+      <div class="walletAssetWithAction">
+        <div class="walletAsset">
+          ${assetRow('d2e','D2E (Do2Earn)',amount(internal.d2e,0))}
+        </div>
+        <button class="walletAction secondary" disabled><span>⇄</span> Swap D2E to $STEEM</button>
+      </div>
+      <div class="walletAssetWithAction">
+        <div class="walletAsset">
+          ${assetRow('steem','$STEEM',amount(internal.steem))}
+        </div>
+        <button class="walletAction secondary" disabled><span>↗</span> Withdraw $STEEM</button>
+      </div>
     </div>
    </article>
    <article class="walletCard externalCard">
@@ -126,6 +136,8 @@ loadWalletPage().catch(error=>{console.error(error);window.dispatchEvent(new Cus
 .walletAssets{margin-top:3px}
 .walletAsset{display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:57px;padding:8px 3px;border-bottom:1px solid rgba(255,255,255,.10);box-sizing:border-box}
 .walletAsset:last-child{border-bottom:0}
+.walletAssetWithAction>.walletAsset{border-bottom:0;padding-bottom:6px}
+.walletAssetWithAction>.walletAction{margin:0 0 8px}
 .assetName{display:flex;align-items:center;gap:11px;min-width:0}
 .assetName>span:last-child{overflow-wrap:anywhere}
 .assetIcon{display:flex;align-items:center;justify-content:center;width:34px;height:34px;flex:0 0 34px;border-radius:10px;background:rgba(255,255,255,.07);font-size:16px}
