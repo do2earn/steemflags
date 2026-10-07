@@ -3,9 +3,9 @@ body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:c
 .earn-card{width:100%;max-width:560px;padding:18px 16px;text-align:center;background:#9cff83;color:#10220d;border:2px solid #caffbd;border-radius:22px;box-shadow:0 0 0 3px rgba(156,255,131,.14),0 8px 20px rgba(0,0,0,.28)}
 .earn-card h1{margin:0;font-size:clamp(1.45rem,6vw,2.05rem);font-weight:800;line-height:1.15}
 .rate{margin:7px 0 11px;font-size:clamp(.95rem,4vw,1.12rem);font-weight:800;letter-spacing:.2px}
-.steps{margin:0;padding:0;list-style:none;text-align:right;counter-reset:step}
-.steps li{counter-increment:step;display:flex;align-items:flex-start;direction:rtl;gap:7px;min-width:0;margin:0 0 4px;padding:7px 8px;background:rgba(255,255,255,.72);border:1px solid rgba(16,34,13,.15);border-radius:9px;font-size:.88rem;font-weight:600;line-height:1.28;text-align:right}
-.steps li::before{content:counter(step);order:2;flex:0 0 22px;height:22px;display:inline-flex;align-items:center;justify-content:center;margin-top:-1px;border-radius:50%;background:#10220d;color:#9cff83;font-size:.78rem;font-weight:900;line-height:1}
+.steps{margin:0;padding:0;list-style:none;text-align:left;counter-reset:step;direction:ltr}
+.steps li{counter-increment:step;display:flex;align-items:flex-start;direction:ltr;gap:7px;min-width:0;margin:0 0 4px;padding:7px 8px;background:rgba(255,255,255,.72);border:1px solid rgba(16,34,13,.15);border-radius:9px;font-size:.88rem;font-weight:600;line-height:1.28;text-align:left}
+.steps li::before{content:counter(step);order:0;flex:0 0 22px;height:22px;display:inline-flex;align-items:center;justify-content:center;margin-top:-1px;border-radius:50%;background:#10220d;color:#9cff83;font-size:.78rem;font-weight:900;line-height:1}
 .steps li>span{order:1;min-width:0;flex:1}
 .walletButton{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;margin:10px 0 8px;padding:9px 12px;border-radius:10px;background:#dc2626;color:#fff;text-decoration:none;font-size:15px;font-weight:800;box-shadow:0 4px 9px rgba(0,0,0,.16)}
 .walletButton:hover{background:#b91c1c}.walletIcon{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
