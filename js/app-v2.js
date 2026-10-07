@@ -6,6 +6,7 @@ import { loadMenu } from './menu.js?v=20260927-menu-syntax-fix-02';
 import { showFlagSetting } from './flag-setting.js?v=20260923-flag-setting-01';
 import { renderDailyRewards, claimDailyReward } from './daily-rewards.js?v=20260927-daily-rewards-02';
 import { loadEarnSteemStats } from './earn-steem-stats.js?v=20261007-01';
+import { loadEarnSteemCard } from './earn-steem-card.js?v=20261008-card-source-01';
 
 const API_BASE='https://steemflags.mehdiq.workers.dev';
 const SESSION_KEY='steemFlagsAuthSession';
@@ -24,7 +25,7 @@ function getSavedGame(username){try{const key=savedKey(username);const raw=key?l
 function clearSavedGame(username){try{const key=savedKey(username);if(key)localStorage.removeItem(key)}catch{}}
 function saveRewardState(state){try{localStorage.setItem(REWARD_STATE_KEY,JSON.stringify(state))}catch{}}
 function performLogout(){try{localStorage.removeItem(SESSION_KEY);localStorage.removeItem(REWARD_STATE_KEY);sessionStorage.removeItem('steemFlagsSponsorContext');sessionStorage.removeItem('steemFlagsSponsorReward')}catch{}window.dispatchEvent(new CustomEvent('steemflags:auth-changed'));window.location.replace('./index.html')}
-async function bootstrap(){const app=$('app');app.innerHTML=await loadComponent();await loadAssetBar();await loadMenu();await start()}
+async function bootstrap(){const app=$('app');app.innerHTML=await loadComponent();await loadEarnSteemCard();await loadAssetBar();await loadMenu();await start()}
 async function start(){
  const query=new URLSearchParams(location.search);if(query.get('logout')==='1'){performLogout();return}
  let username=null,account=null,gameScore=0,sessionCorrect=0;
