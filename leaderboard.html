@@ -18,8 +18,8 @@ import {getStoredUsername,loadState,refreshDailyEnergy,syncPurchasedEnergy} from
 import {loadMenu} from './js/menu.js?v=20260820-05';
 import {loadAssetBar as loadSharedAssetBar,refreshAssetBar} from './js/asset-bar.js?v=20260826-assetbar-04';
 import {getLanguage,t} from './js/i18n.js';
-import './js/leaderboard.js?v=20261008-leaderboard-02';
-import { loadEarnSteemStats } from './js/earn-steem-stats.js?v=20261008-leaderboard-02';
+import './js/leaderboard.js?v=20261008-leaderboard-sync-03';
+import { loadEarnSteemStats } from './js/earn-steem-stats.js?v=20261008-leaderboard-sync-03';
 
 function renderLeaderboardPage(){
  const lang=getLanguage();
@@ -54,7 +54,7 @@ function renderLeaderboardPage(){
 }
 async function loadLeaderboardPage(){
  const app=document.getElementById('app');
- const response=await fetch('./components/app-shell.html?v=20261008-leaderboard-02',{cache:'no-store'});
+ const response=await fetch('./components/app-shell.html?v=20261008-leaderboard-sync-03',{cache:'no-store'});
  if(!response.ok)throw Error('Unable to load app shell.');
  app.innerHTML=await response.text();
  ['loginView','homeView','gameView'].forEach(id=>document.getElementById(id)?.remove());
