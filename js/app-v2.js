@@ -1,5 +1,5 @@
 import { FlagGame } from './game.js';
-import { applyLanguage, getLanguage, t, setLanguage } from './i18n.js?v=20261008-earn-i18n-01';
+import { applyLanguage, getLanguage, t, setLanguage } from './i18n.js?v=20261008-earn-i18n-02';
 import { verifyPostingKey, verifyKeychainLogin } from './steem-auth.js?v=20260906-keychain-01';
 import { saveGameResult } from './reward.js';
 import { loadMenu } from './menu.js?v=20260927-menu-syntax-fix-02';
