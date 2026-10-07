@@ -17,12 +17,12 @@
 import {getStoredUsername,loadState,refreshDailyEnergy,syncPurchasedEnergy} from './js/storage.js?v=20260822-leaderboard-01';
 import {loadMenu} from './js/menu.js?v=20260820-05';
 import {loadAssetBar as loadSharedAssetBar,refreshAssetBar} from './js/asset-bar.js?v=20260826-assetbar-04';
-import {getLanguage,t} from './js/i18n.js';
+import {getLanguage,t} from './js/i18n.js?v=20261008-earn-i18n-01';
 import './js/leaderboard.js?v=20261008-leaderboard-sync-03';
 import { loadEarnSteemStats } from './js/earn-steem-stats.js?v=20261008-leaderboard-sync-03';
 import { loadEarnSteemCard } from './js/earn-steem-card.js?v=20261008-card-source-01';
 
-function renderLeaderboardPage(){
+async function renderLeaderboardPage(){
  const lang=getLanguage();
  document.documentElement.lang=lang;
  document.documentElement.dir=['fa','ur'].includes(lang)?'rtl':'ltr';
