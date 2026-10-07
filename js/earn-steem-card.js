@@ -1,3 +1,5 @@
+import {getLanguage,t} from './i18n.js?v=20261008-earn-i18n-02';
+
 export async function loadEarnSteemCard(mountId='earnSteemCardMount') {
   const mount=document.getElementById(mountId);
   if(!mount)return;
@@ -22,5 +24,7 @@ export async function loadEarnSteemCard(mountId='earnSteemCardMount') {
   const title=sourceCard.querySelector('h1');
   if(title)title.id='earnSteemTitleHome';
   card.innerHTML=sourceCard.innerHTML;
+  const lang=getLanguage();
+  card.querySelectorAll('[data-i18n]').forEach(element=>{element.textContent=t(element.dataset.i18n,lang)});
   mount.replaceWith(card);
 }
