@@ -10,7 +10,7 @@ body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:c
 .walletButton{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;margin:10px 0 8px;padding:9px 12px;border-radius:10px;background:#dc2626;color:#fff;text-decoration:none;font-size:15px;font-weight:800;box-shadow:0 4px 9px rgba(0,0,0,.16)}
 .walletButton:hover{background:#b91c1c}.walletIcon{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .earn-card hr{border:0;border-top:1px solid rgba(16,34,13,.22);margin:8px 0}
-.stats{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:4px 14px;text-align:center;font-size:.82rem;line-height:1.45}.stats strong{font-weight:800}
+.stats{width:100%;display:block;text-align:center;white-space:nowrap;font-size:.82rem;line-height:1.45}.stats strong{font-weight:800}
 @media(max-width:560px){.earn-card{padding:15px 10px;border-radius:18px}.earn-card h1{font-size:1.45rem}.rate{margin:5px 0 8px}.steps li{font-size:.82rem;padding:6px 7px;gap:6px;margin-bottom:3px}.steps li::before{flex-basis:20px;height:20px;font-size:.72rem}.walletButton{margin:8px 0 6px;padding:8px 10px}.stats{font-size:.8rem}}</style></head><body>
 <main class="earn-card">
   <h1 data-i18n="earnCardTitle">💰 Earn $STEEM Now!!</h1>
@@ -24,6 +24,6 @@ body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:c
   </ol>
   <a class="walletButton" href="./wallet.html"><svg class="walletIcon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6.5A2.5 2.5 0 0 1 5.5 4H19a2 2 0 0 1 2 2v2h-4.5A3.5 3.5 0 0 0 13 11.5v1A3.5 3.5 0 0 0 16.5 16H21v2a2 2 0 0 1-2 2H5.5A2.5 2.5 0 0 1 3 17.5v-11Z"/><path d="M21 9h-4.5a2.5 2.5 0 0 0 0 5H21V9Z"/></svg><span data-i18n="earnWallet">My Wallet</span></a>
   <hr>
-  <div class="stats"><span>• <span data-i18n="earnTotalD2E">Total Earned D2E:</span> <strong data-earn-stats="total-earned">1,872</strong></span><span>• <span data-i18n="earnTotalPlayers">Total Players:</span> <strong data-earn-stats="total-players">22</strong></span></div>
+  <div class="stats">• <span data-i18n="earnTotalD2E">Total Earned D2E:</span> <strong data-earn-stats="total-earned">1,872</strong>&nbsp;&nbsp;•&nbsp;&nbsp;<span data-i18n="earnTotalPlayers">Total Players:</span> <strong data-earn-stats="total-players">22</strong></div>
 </main>
 <script type="module">import {applyLanguage,getLanguage} from "./js/i18n.js?v=20261008-earn-i18n-03";import {loadEarnSteemStats} from "./js/earn-steem-stats.js?v=20261007-01";const lang=getLanguage();applyLanguage(document,lang);document.title=`${document.querySelector('[data-i18n="earnCardTitle"]')?.textContent||"Earn $STEEM Now!!"} - Steem Flags`;loadEarnSteemStats();window.addEventListener("languagechange",()=>{const current=getLanguage();applyLanguage(document,current);document.title=`${document.querySelector('[data-i18n="earnCardTitle"]')?.textContent||"Earn $STEEM Now!!"} - Steem Flags`});</script></body></html>
