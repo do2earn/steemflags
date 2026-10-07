@@ -31,7 +31,18 @@ function renderLeaderboardPage(){
  main.innerHTML=`<section id="leaderboardSection" class="leaderboardSection" aria-label="🏆 ${title}">
    <div id="leaderboard" class="card leaderboard">
      <div class="leaderboardTitle"><span class="trophy">🏆</span><h2>${title}</h2></div><hr class="leaderboardTitleHr">
-     <iframe class="earnSteemLeaderboardFrame" src="./earnsteem.html" title="Earn $STEEM Now" loading="lazy"></iframe>
+     <section class="earnSteemCard" aria-labelledby="earnSteemTitleFull">
+  <h3 id="earnSteemTitleFull">💰 Earn $STEEM Now!!</h3>
+  <div class="earnSteemRate">each 1000 D2E = 1 $STEEM</div>
+  <ol class="earnSteemSteps">
+    <li><span class="earnSteemStepNumber">1</span>🎮 <strong>Play &amp; Earn:</strong> Use your daily ⚡ Energy to guess country flags and earn D2E.</li>
+    <li><span class="earnSteemStepNumber">2</span>⚡ <strong>Get More Energy:</strong> Buy additional Energy when you want more chances to play and earn.</li>
+    <li><span class="earnSteemStepNumber">3</span>🪙 <strong>Build Your D2E Balance:</strong> Keep playing and collect D2E from gameplay and available rewards.</li>
+    <li><span class="earnSteemStepNumber">4</span>🎯 <strong>Reach the Goal:</strong> Collect 10,000 D2E to reach the minimum withdrawal amount of 10 $STEEM.</li>
+    <li><span class="earnSteemStepNumber">5</span>💸 <strong>Withdraw Your $STEEM:</strong> Send your 10 $STEEM withdrawal to your external Steem wallet.</li>
+    <li><span class="earnSteemStepNumber">6</span>🔄 <strong>Keep Growing:</strong> Continue playing, earning D2E, and work toward your next 10 $STEEM withdrawal.</li>
+  </ol>
+</section>
      <div id="leaderboardStatus" class="muted">Loading leaderboard…</div>
      <div class="leaderboardTableWrap"><table id="leaderboardTable" class="leaderboardTable"><thead><tr><th>Rank</th><th>Player</th><th>D2E Rewards</th></tr></thead><tbody id="leaderboardBody"></tbody></table></div>
    </div>
@@ -61,7 +72,7 @@ loadLeaderboardPage().catch(error=>{console.error(error);window.dispatchEvent(ne
 .leaderboard{width:100%;box-sizing:border-box}
 .leaderboardTitle{display:flex;align-items:center;gap:6px}
 .leaderboardTitle .trophy{line-height:1}
-.leaderboardTitle h2{margin:0}.leaderboardTitleHr{border:0;border-top:1px solid rgba(255,255,255,.16);margin:0 0 16px}.earnSteemLeaderboardFrame{display:block;width:100%;height:620px;border:0;border-radius:18px;margin:0 0 18px;background:transparent}
+.leaderboardTitle h2{margin:0}.leaderboardTitleHr{border:0;border-top:1px solid rgba(255,255,255,.16);margin:0 0 16px}.earnSteemCard{width:100%;margin:0 0 18px;padding:24px 20px;box-sizing:border-box;text-align:center;background:#39ff14;color:#10220d;border:3px solid #b8ff9e;border-radius:26px;box-shadow:0 0 0 4px rgba(57,255,20,.18),0 12px 30px rgba(0,0,0,.35)}.earnSteemCard h3{margin:0;font-size:clamp(1.7rem,6vw,2.35rem);font-weight:800;line-height:1.2}.earnSteemRate{margin:12px 0 22px;font-size:clamp(1rem,4vw,1.2rem);font-weight:700}.earnSteemSteps{margin:0;padding:0;list-style:none;text-align:left}.earnSteemSteps li{position:relative;margin:0 0 10px;padding:12px 12px 12px 45px;background:rgba(255,255,255,.58);border:1px solid rgba(16,34,13,.18);border-radius:15px;font-size:.96rem;line-height:1.45}.earnSteemSteps li:last-child{margin-bottom:0}.earnSteemStepNumber{position:absolute;left:12px;top:12px;width:24px;height:24px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:#10220d;color:#39ff14;font-size:.8rem;font-weight:800}@media(max-width:560px){.earnSteemCard{padding:20px 12px;border-radius:22px}.earnSteemCard h3{font-size:1.7rem}.earnSteemSteps li{font-size:.9rem;padding:11px 10px 11px 42px}.earnSteemStepNumber{left:10px;top:11px}}
 .leaderboardTable{width:100%;max-width:100%;table-layout:fixed;border-collapse:separate;border-spacing:0 7px}
 .leaderboardTable th,.leaderboardTable td{padding:9px;box-sizing:border-box;overflow:hidden}.leaderboardTable th{text-align:center}
 .leaderboardTable th:first-child,.leaderboardTable td:first-child{width:52px;text-align:center}
