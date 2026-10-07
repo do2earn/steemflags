@@ -33,8 +33,3 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy
-      - name: Read D2E economy statistics
-        shell: bash
-        run: |
-          echo "D2E ECONOMY STATISTICS"
-          curl -fsSL "https://steemflags.mehdiq.workers.dev/api/admin/d2e-stats"
