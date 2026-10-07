@@ -34,9 +34,7 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy
       - name: Read D2E economy statistics
-        uses: cloudflare/wrangler-action@v4
-        with:
-          workingDirectory: cloudflare
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: d1 execute steemflags --remote --command="SELECT 'GAME_PRODUCED' AS metric, COALESCE(SUM(CASE WHEN Score+CASE WHEN Perfect=1 THEN 4 ELSE 0 END>0 THEN Score+CASE WHEN Perfect=1 THEN 4 ELSE 0 END ELSE 0 END),0) AS value FROM game_events UNION ALL SELECT 'GAME_CONSUMED', COALESCE(SUM(CASE WHEN Score+CASE WHEN Perfect=1 THEN 4 ELSE 0 END<0 THEN ABS(Score+CASE WHEN Perfect=1 THEN 4 ELSE 0 END) ELSE 0 END),0) FROM game_events UNION ALL SELECT 'DAILY_REWARDS_PRODUCED', COALESCE(SUM(CASE WHEN Reward>0 THEN Reward ELSE 0 END),0) FROM daily_rewards UNION ALL SELECT 'AD_REWARDS_PRODUCED', COALESCE(SUM(CASE WHEN Rewarded=1 THEN 2 ELSE 0 END),0) FROM ad_sessions UNION ALL SELECT 'CURRENT_D2E_BALANCE', COALESCE(SUM(D2E),0) FROM accounts UNION ALL SELECT 'ACCOUNTS', COUNT(*) FROM accounts;"
+        shell: bash
+        run: |
+          echo "D2E ECONOMY STATISTICS"
+          curl -fsSL "https://steemflags.mehdiq.workers.dev/api/admin/d2e-stats"
