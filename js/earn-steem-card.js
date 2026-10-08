@@ -3,7 +3,7 @@ import {getLanguage,t} from './i18n.js?v=20261008-earn-i18n-02';
 export async function loadEarnSteemCard(mountId='earnSteemCardMount') {
   const mount=document.getElementById(mountId);
   if(!mount)return;
-  const response=await fetch(new URL('./earnsteem.html?v=20261008-card-source-01',document.baseURI).href,{cache:'no-store'});
+  const response=await fetch(new URL('./earnsteem.html?v=20261009-card-source-02',document.baseURI).href,{cache:'no-store'});
   if(!response.ok)throw Error(`Unable to load Earn $STEEM card: ${response.status}`);
   const html=await response.text();
   const doc=new DOMParser().parseFromString(html,'text/html');
