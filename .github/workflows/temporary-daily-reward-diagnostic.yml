@@ -18,4 +18,4 @@ jobs:
       - name: Read daily reward diagnostic from Worker
         run: |
           set -euo pipefail
-          curl --fail --silent --show-error --retry 18 --retry-delay 5 --retry-all-errors "https://steemflags.mehdiq.workers.dev/api/accounts?limit=10000" | jq '{success, matches: [.accounts[] | select((.D2E | tonumber) == 62)]}'
+          curl --fail --silent --show-error --retry 18 --retry-delay 5 --retry-all-errors "https://steemflags.mehdiq.workers.dev/api/internal-daily-check" | jq .
