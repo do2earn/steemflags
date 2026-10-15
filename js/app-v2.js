@@ -4,7 +4,7 @@ import { verifyPostingKey, verifyKeychainLogin } from './steem-auth.js?v=2026090
 import { saveGameResult } from './reward.js';
 import { loadMenu } from './menu.js?v=20260927-menu-syntax-fix-02';
 import { showFlagSetting } from './flag-setting.js?v=20260923-flag-setting-01';
-import { renderDailyRewards, claimDailyReward } from './daily-rewards.js?v=20260927-daily-rewards-02';
+import { renderDailyRewards, claimDailyReward } from './daily-rewards.js?v=20261015-daily-reward-claim-01';
 import { loadEarnSteemStats } from './earn-steem-stats.js?v=20261007-01';
 import { loadEarnSteemCard } from './earn-steem-card.js?v=20261008-card-source-01';
 
