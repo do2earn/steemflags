@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/temporary-daily-reward-diagnostic.yml'
+      - 'cloudflare/worker.js'
   workflow_dispatch:
 
 permissions:
@@ -17,4 +18,4 @@ jobs:
       - name: Read daily reward diagnostic from Worker
         run: |
           set -euo pipefail
-          curl --fail --silent --show-error "https://steemflags.mehdiq.workers.dev/api/internal-daily-check" | jq .
+          curl --fail --silent --show-error --retry 18 --retry-delay 5 --retry-all-errors "https://steemflags.mehdiq.workers.dev/api/internal-daily-check" | jq .
