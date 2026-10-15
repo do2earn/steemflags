@@ -1,0 +1,16 @@
+name: Temporary Daily Reward Diagnostic
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Read daily reward diagnostic from Worker
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error "https://steemflags.mehdiq.workers.dev/api/internal-daily-check" | jq .
