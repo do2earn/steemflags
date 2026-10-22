@@ -1,4 +1,4 @@
-const API_BASE='https://steemflags.mehdiq.workers.dev';
+const API_BASE='https://steemflags.do2earn.workers.dev';
 import { COUNTRIES } from '../data/countries.js';
 
 const FLAG_CODES=new Map(COUNTRIES.map(([name,,code])=>[name,code]));
