@@ -1,0 +1,71 @@
+name: Verify do2earn D1 Restore
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/verify-d1-restore.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Check required secret
+        env:
+          CF_TOKEN: ${{ secrets.STEEMFLAGS_D1_BACKUP }}
+          CF_ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          test -n "$CF_TOKEN" || { echo "Missing D1 access token"; exit 1; }
+          test -n "$CF_ACCOUNT" || { echo "Missing Cloudflare account ID"; exit 1; }
+
+      - name: Verify restored data (read-only)
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.STEEMFLAGS_D1_BACKUP }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          query="SELECT 'accounts' AS table_name, COUNT(*) AS row_count FROM accounts UNION ALL SELECT 'ad_sessions', COUNT(*) FROM ad_sessions UNION ALL SELECT 'app_migrations', COUNT(*) FROM app_migrations UNION ALL SELECT 'daily_rewards', COUNT(*) FROM daily_rewards UNION ALL SELECT 'energy_orders', COUNT(*) FROM energy_orders UNION ALL SELECT 'energy_purchases', COUNT(*) FROM energy_purchases UNION ALL SELECT 'game_events', COUNT(*) FROM game_events UNION ALL SELECT 'sponsor_ad_events', COUNT(*) FROM sponsor_ad_events UNION ALL SELECT 'sponsor_ad_sessions', COUNT(*) FROM sponsor_ad_sessions;"
+          npx --yes wrangler@latest d1 execute do2earn --remote --command "$query" --json --config cloudflare/wrangler.toml > "$RUNNER_TEMP/restored-counts.json"
+          node <<'NODE'
+          const fs = require('fs');
+          const data = JSON.parse(fs.readFileSync(process.env.RUNNER_TEMP + '/restored-counts.json', 'utf8'));
+          const rows = [];
+          function collect(x) {
+            if (!x || typeof x !== 'object') return;
+            if (Array.isArray(x)) { for (const item of x) collect(item); return; }
+            if (Object.prototype.hasOwnProperty.call(x, 'table_name') &&
+                Object.prototype.hasOwnProperty.call(x, 'row_count')) rows.push(x);
+            for (const value of Object.values(x)) collect(value);
+          }
+          collect(data);
+          const unique = [...new Map(rows.map(r => [String(r.table_name), r])).values()];
+          const expected = {accounts:25, ad_sessions:22, app_migrations:1, daily_rewards:42, energy_orders:1, energy_purchases:9, game_events:115, sponsor_ad_events:124, sponsor_ad_sessions:140};
+          const actual = Object.fromEntries(unique.map(r => [r.table_name, Number(r.row_count)]));
+          console.log('Read-only verification results:');
+          for (const [table, count] of Object.entries(expected)) {
+            console.log(table + ': ' + (actual[table] ?? 'MISSING') + ' (expected ' + count + ')');
+            if (actual[table] !== count) process.exitCode = 1;
+          }
+          if (unique.length !== Object.keys(expected).length) {
+            console.error('Expected 9 application tables, found ' + unique.length);
+            process.exitCode = 1;
+          }
+          const total = Object.values(actual).reduce((a, b) => a + b, 0);
+          console.log('Total rows: ' + total + ' (expected 479)');
+          if (total !== 479) process.exitCode = 1;
+          if (!process.exitCode) console.log('SUCCESS: all 9 table counts match. This workflow only reads data and does not alter the database.');
+          NODE
