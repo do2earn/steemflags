@@ -38,7 +38,7 @@ jobs:
         shell: bash
         run: |
           set -uo pipefail
-          query="SELECT 'accounts' AS table_name, COUNT(*) AS row_count FROM accounts UNION ALL SELECT 'ad_sessions', COUNT(*) FROM ad_sessions UNION ALL SELECT 'app_migrations', COUNT(*) FROM app_migrations UNION ALL SELECT 'daily_rewards', COUNT(*) FROM daily_rewards UNION ALL SELECT 'energy_orders', COUNT(*) FROM energy_orders UNION ALL SELECT 'energy_purchases', COUNT(*) FROM energy_purchases UNION ALL SELECT 'game_events', COUNT(*) FROM game_events UNION ALL SELECT 'sponsor_ad_events', COUNT(*) FROM sponsor_ad_events UNION ALL SELECT 'sponsor_ad_sessions', COUNT(*) FROM sponsor_ad_sessions;"
+          query="SELECT (SELECT COUNT(*) FROM accounts) AS accounts, (SELECT COUNT(*) FROM ad_sessions) AS ad_sessions, (SELECT COUNT(*) FROM app_migrations) AS app_migrations, (SELECT COUNT(*) FROM daily_rewards) AS daily_rewards, (SELECT COUNT(*) FROM energy_orders) AS energy_orders, (SELECT COUNT(*) FROM energy_purchases) AS energy_purchases, (SELECT COUNT(*) FROM game_events) AS game_events, (SELECT COUNT(*) FROM sponsor_ad_events) AS sponsor_ad_events, (SELECT COUNT(*) FROM sponsor_ad_sessions) AS sponsor_ad_sessions;"
           echo "Running read-only row-count query against destination database do2earn."
           set +e
           npx --yes wrangler@latest d1 execute do2earn --remote --command "$query" --json --config cloudflare/wrangler.toml > "$RUNNER_TEMP/restored-counts.json" 2> "$RUNNER_TEMP/wrangler.stderr"
@@ -65,29 +65,27 @@ jobs:
           const raw = fs.readFileSync(process.env.RUNNER_TEMP + '/restored-counts.json', 'utf8');
           let data;
           try { data = JSON.parse(raw); } catch (e) { console.error('JSON parse failed: ' + e.message); process.exit(1); }
-          const rows = [];
+          const expected = {accounts:25, ad_sessions:22, app_migrations:1, daily_rewards:42, energy_orders:1, energy_purchases:9, game_events:115, sponsor_ad_events:124, sponsor_ad_sessions:140};
+          const found = {};
           function collect(x) {
             if (!x || typeof x !== 'object') return;
             if (Array.isArray(x)) { for (const item of x) collect(item); return; }
-            if (Object.prototype.hasOwnProperty.call(x, 'table_name') &&
-                Object.prototype.hasOwnProperty.call(x, 'row_count')) rows.push(x);
+            for (const table of Object.keys(expected)) {
+              if (Object.prototype.hasOwnProperty.call(x, table)) {
+                const value = Number(x[table]);
+                if (Number.isFinite(value)) found[table] = value;
+              }
+            }
             for (const value of Object.values(x)) collect(value);
           }
           collect(data);
-          const unique = [...new Map(rows.map(r => [String(r.table_name), r])).values()];
-          const expected = {accounts:25, ad_sessions:22, app_migrations:1, daily_rewards:42, energy_orders:1, energy_purchases:9, game_events:115, sponsor_ad_events:124, sponsor_ad_sessions:140};
-          const actual = Object.fromEntries(unique.map(r => [r.table_name, Number(r.row_count)]));
           console.log('Read-only verification results:');
           for (const [table, count] of Object.entries(expected)) {
-            console.log(table + ': ' + (actual[table] ?? 'MISSING') + ' (expected ' + count + ')');
-            if (actual[table] !== count) process.exitCode = 1;
+            console.log(table + ': ' + (found[table] ?? 'MISSING') + ' (expected ' + count + ')');
+            if (found[table] !== count) process.exitCode = 1;
           }
-          if (unique.length !== Object.keys(expected).length) {
-            console.error('Expected 9 application tables, found ' + unique.length);
-            process.exitCode = 1;
-          }
-          const total = Object.values(actual).reduce((a, b) => a + b, 0);
+          const total = Object.values(found).reduce((a, b) => a + b, 0);
           console.log('Total rows: ' + total + ' (expected 479)');
-          if (total !== 479) process.exitCode = 1;
+          if (Object.keys(found).length !== 9 || total !== 479) process.exitCode = 1;
           if (!process.exitCode) console.log('SUCCESS: all 9 table counts match. This workflow only reads data and does not alter the database.');
           NODE
