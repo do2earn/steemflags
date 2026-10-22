@@ -1,0 +1,40 @@
+name: Create Destination D1 Database
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/create-d1-database.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  create-database:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Create destination database if missing
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.STEEMFLAGS_D1_BACKUP }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          if npx --yes wrangler@latest d1 list --json --config cloudflare/wrangler.toml > /tmp/d1-list.json; then
+            if node -e 'const fs=require("fs"); const d=JSON.parse(fs.readFileSync("/tmp/d1-list.json","utf8")); process.exit(Array.isArray(d) && d.some(x=>x.name==="do2earn") ? 0 : 1)'; then
+              echo "Destination database do2earn already exists; no changes made."
+              exit 0
+            fi
+          else
+            echo "Could not safely inspect D1 database inventory; refusing to create anything."
+            exit 1
+          fi
+          npx --yes wrangler@latest d1 create do2earn --config cloudflare/wrangler.toml
+          echo "Destination database created. Original steemflags database and Worker binding were not changed."
