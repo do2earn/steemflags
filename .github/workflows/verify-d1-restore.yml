@@ -40,8 +40,10 @@ jobs:
           set -uo pipefail
           query="SELECT 'accounts' AS table_name, COUNT(*) AS row_count FROM accounts UNION ALL SELECT 'ad_sessions', COUNT(*) FROM ad_sessions UNION ALL SELECT 'app_migrations', COUNT(*) FROM app_migrations UNION ALL SELECT 'daily_rewards', COUNT(*) FROM daily_rewards UNION ALL SELECT 'energy_orders', COUNT(*) FROM energy_orders UNION ALL SELECT 'energy_purchases', COUNT(*) FROM energy_purchases UNION ALL SELECT 'game_events', COUNT(*) FROM game_events UNION ALL SELECT 'sponsor_ad_events', COUNT(*) FROM sponsor_ad_events UNION ALL SELECT 'sponsor_ad_sessions', COUNT(*) FROM sponsor_ad_sessions;"
           echo "Running read-only row-count query against destination database do2earn."
+          set +e
           npx --yes wrangler@latest d1 execute do2earn --remote --command "$query" --json --config cloudflare/wrangler.toml > "$RUNNER_TEMP/restored-counts.json" 2> "$RUNNER_TEMP/wrangler.stderr"
           rc=$?
+          set -e
           echo "Wrangler exit code: $rc"
           if [ -s "$RUNNER_TEMP/wrangler.stderr" ]; then
             echo "Wrangler stderr:"
