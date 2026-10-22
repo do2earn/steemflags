@@ -123,7 +123,7 @@ jobs:
               if obj.get("sql"):
                   print("DDL:", " ".join(obj["sql"].split()))
 
-          tables = query("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name")
+          tables = query("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' AND name != '_cf_KV' ORDER BY name")
           print("Application tables found:", len(tables))
           for item in tables:
               name = item["name"]
