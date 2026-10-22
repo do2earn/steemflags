@@ -1,0 +1,48 @@
+name: Inspect Steem Flags D1 inventory
+
+on:
+  push:
+    paths:
+      - '.github/workflows/inspect-d1-inventory.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - name: List relevant D1 databases (read-only)
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "${CLOUDFLARE_API_TOKEN:-}" ] || [ -z "${CLOUDFLARE_ACCOUNT_ID:-}" ]; then
+            echo "::error::Cloudflare API token/account ID secrets are not available to this workflow."
+            exit 1
+          fi
+          response="$(curl --fail --silent --show-error --max-time 30 \
+            -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            -H "Content-Type: application/json" \
+            "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/d1/database?per_page=100")"
+          RESPONSE_JSON="$response" python3 - <<'PY'
+          import json, os, sys
+          data = json.loads(os.environ["RESPONSE_JSON"])
+          if not data.get("success"):
+              print("Cloudflare API returned success=false.")
+              sys.exit(1)
+          items = data.get("result") or []
+          matches = [x for x in items if any(k in str(x.get("name", "")).lower() for k in ("steemflags", "do2earn"))]
+          if not matches:
+              print("No D1 database names matching steemflags or do2earn were found.")
+          for item in matches:
+              print("Database:", item.get("name"))
+              print("ID:", item.get("uuid"))
+              print("Tables:", item.get("num_tables", "unknown"))
+              print("Size bytes:", item.get("file_size", "unknown"))
+              print("---")
+          print("Matching databases:", len(matches))
+          PY
