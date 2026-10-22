@@ -106,7 +106,7 @@ async function loadWalletPage(){
  await refreshAssetBar(username);
  let account=null;
  try{
-   const accountResponse=await fetch(`https://steemflags.mehdiq.workers.dev/api/account?username=${encodeURIComponent(username)}`,{cache:'no-store'});
+   const accountResponse=await fetch(`https://steemflags.do2earn.workers.dev/api/account?username=${encodeURIComponent(username)}`,{cache:'no-store'});
    if(accountResponse.ok){
      const accountData=await accountResponse.json();
      if(accountData?.success&&accountData.account) account=accountData.account;
