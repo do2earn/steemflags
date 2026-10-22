@@ -89,3 +89,62 @@ jobs:
           if (Object.keys(found).length !== 9 || total !== 479) process.exitCode = 1;
           if (!process.exitCode) console.log('SUCCESS: all 9 table counts match. This workflow only reads data and does not alter the database.');
           NODE
+
+      - name: Compare source and destination schema (read-only)
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.STEEMFLAGS_D1_BACKUP }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          query="SELECT type, name, tbl_name, COALESCE(sql,'') AS sql FROM sqlite_master WHERE name NOT LIKE 'sqlite_%' AND name != '_cf_KV' ORDER BY type, name;"
+          for db in steemflags do2earn; do
+            echo "Inspecting schema objects in $db (read-only)."
+            npx --yes wrangler@latest d1 execute "$db" --remote --command "$query" --json --config cloudflare/wrangler.toml > "$RUNNER_TEMP/schema-$db.json"
+          done
+          node <<'NODE'
+          const fs = require('fs');
+          function findRows(value, out = []) {
+            if (!value || typeof value !== 'object') return out;
+            if (Array.isArray(value)) { for (const item of value) findRows(item, out); return out; }
+            if (Object.hasOwn(value, 'type') && Object.hasOwn(value, 'name') && Object.hasOwn(value, 'tbl_name')) out.push(value);
+            for (const v of Object.values(value)) findRows(v, out);
+            return out;
+          }
+          function load(db) {
+            const raw = fs.readFileSync(process.env.RUNNER_TEMP + '/schema-' + db + '.json', 'utf8');
+            const data = JSON.parse(raw);
+            const rows = findRows(data);
+            const unique = [...new Map(rows.map(x => [x.type + ':' + x.name, x])).values()];
+            if (!unique.length) throw new Error('No schema objects parsed for ' + db);
+            return unique.map(x => ({type:String(x.type), name:String(x.name), tbl_name:String(x.tbl_name), sql:String(x.sql || '').replace(/\\s+/g,' ').trim()}))
+              .sort((a,b) => (a.type+a.name).localeCompare(b.type+b.name));
+          }
+          const source = load('steemflags');
+          const dest = load('do2earn');
+          const fmt = x => JSON.stringify(x);
+          console.log('Source schema objects:', source.length);
+          console.log('Destination schema objects:', dest.length);
+          for (const obj of dest) console.log('DESTINATION ' + obj.type + ': ' + obj.name + (obj.sql ? ' | ' + obj.sql : ''));
+          const sourceTables = source.filter(x => x.type === 'table').map(x => x.name).sort();
+          const destTables = dest.filter(x => x.type === 'table').map(x => x.name).sort();
+          const sourceIndexes = source.filter(x => x.type === 'index').map(x => x.name).sort();
+          const destIndexes = dest.filter(x => x.type === 'index').map(x => x.name).sort();
+          console.log('Source application tables:', sourceTables.length, sourceTables.join(', '));
+          console.log('Destination application tables:', destTables.length, destTables.join(', '));
+          console.log('Source explicit indexes:', sourceIndexes.length, sourceIndexes.join(', ') || '(none)');
+          console.log('Destination explicit indexes:', destIndexes.length, destIndexes.join(', ') || '(none)');
+          if (fmt(source) !== fmt(dest)) {
+            console.error('FAIL: source and destination schema objects differ.');
+            const src = new Map(source.map(x => [x.type + ':' + x.name, fmt(x)]));
+            const dst = new Map(dest.map(x => [x.type + ':' + x.name, fmt(x)]));
+            for (const [k,v] of src) if (dst.get(k) !== v) console.error('SOURCE DIFFERENCE: ' + k + ' => ' + v);
+            for (const [k,v] of dst) if (src.get(k) !== v) console.error('DESTINATION DIFFERENCE: ' + k + ' => ' + v);
+            process.exit(1);
+          }
+          if (destTables.length !== 9) {
+            console.error('FAIL: expected 9 application tables, found ' + destTables.length);
+            process.exit(1);
+          }
+          console.log('SUCCESS: source and destination schema objects match exactly (excluding SQLite internals and Cloudflare _cf_KV).');
+          NODE
