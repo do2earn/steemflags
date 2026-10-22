@@ -1,9 +1,6 @@
 name: Inspect Steem Flags D1 inventory
 
 on:
-  push:
-    paths:
-      - '.github/workflows/inspect-d1-inventory.yml'
   workflow_dispatch:
 
 permissions:
