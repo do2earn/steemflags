@@ -1,4 +1,4 @@
-const API_BASE = 'https://steemflags.mehdiq.workers.dev';
+const API_BASE = 'https://steemflags.do2earn.workers.dev';
 
 // Read the logged-in user's D2E balance from Cloudflare D1.
 export async function loadLeaderboardSF(username) {
