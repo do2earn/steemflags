@@ -35,7 +35,7 @@ jobs:
           verify_code="$(curl --silent --show-error --max-time 30 -o verify.json -w '%{http_code}' \
             -H "Authorization: Bearer $CLOUDFLARE_D1_READ_TOKEN" \
             -H "Content-Type: application/json" \
-            "https://api.cloudflare.com/client/v4/user/tokens/verify")"
+            "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/tokens/verify")"
           echo "Token verification HTTP status: $verify_code"
           python3 - <<'PY'
           import json
