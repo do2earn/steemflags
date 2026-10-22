@@ -1,0 +1,22 @@
+name: Validate Steem Flags reward scanner
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'scripts/process_steem_rewards.py'
+      - '.github/workflows/validate-reward-scanner.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  syntax-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Validate Python syntax
+        run: python3 -m py_compile scripts/process_steem_rewards.py
