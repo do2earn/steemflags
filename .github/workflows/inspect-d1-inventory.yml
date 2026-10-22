@@ -2,6 +2,9 @@ name: Inspect Steem Flags D1 inventory
 
 on:
   workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/inspect-d1-inventory.yml'
 
 permissions:
   contents: read
@@ -76,4 +79,57 @@ jobs:
               print("Size bytes:", item.get("file_size", "unknown"))
               print("---")
           print("Matching databases:", len(matches))
+          PY
+
+          echo "Running read-only SQL inspection against the known Steem Flags D1 database."
+          python3 - <<'PY'
+          import json, os, urllib.request, urllib.error, sys
+
+          account = os.environ["CLOUDFLARE_ACCOUNT_ID"]
+          token = os.environ["CLOUDFLARE_D1_READ_TOKEN"]
+          database_id = "30c7f54b-5bc6-4fca-b6cf-1a3c319bacfc"
+          endpoint = f"https://api.cloudflare.com/client/v4/accounts/{account}/d1/database/{database_id}/query"
+
+          def query(sql):
+              body = json.dumps({"sql": sql}).encode()
+              req = urllib.request.Request(
+                  endpoint, data=body, method="POST",
+                  headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
+              )
+              try:
+                  with urllib.request.urlopen(req, timeout=30) as response:
+                      payload = json.loads(response.read().decode())
+              except urllib.error.HTTPError as exc:
+                  print("D1 SQL HTTP status:", exc.code)
+                  print(exc.read().decode()[:1500])
+                  sys.exit(1)
+              if not payload.get("success"):
+                  print("D1 SQL query failed:")
+                  for error in payload.get("errors", []):
+                      print(error.get("code"), error.get("message"))
+                  sys.exit(1)
+              results = payload.get("result") or []
+              if not results:
+                  return []
+              return results[0].get("results") or []
+
+          schema = query(
+              "SELECT type, name, sql FROM sqlite_master "
+              "WHERE name NOT LIKE 'sqlite_%' ORDER BY type, name"
+          )
+          print("Schema objects found:", len(schema))
+          for obj in schema:
+              print(f"OBJECT {obj.get('type')}: {obj.get('name')}")
+              if obj.get("sql"):
+                  print("DDL:", " ".join(obj["sql"].split()))
+
+          tables = query("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name")
+          print("Application tables found:", len(tables))
+          for item in tables:
+              name = item["name"]
+              quoted = '"' + name.replace('"', '""') + '"'
+              rows = query(f"SELECT COUNT(*) AS row_count FROM {quoted}")
+              count = rows[0].get("row_count", "unknown") if rows else "unknown"
+              print(f"ROW COUNT {name}: {count}")
+          print("Read-only SQL inspection completed.")
           PY
