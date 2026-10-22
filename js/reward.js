@@ -1,4 +1,4 @@
-const API_BASE = 'https://steemflags.mehdiq.workers.dev';
+const API_BASE = 'https://steemflags.do2earn.workers.dev';
 
 export async function saveGameResult({username, score, perfect=false, eventId}) {
   const account = String(username ?? '').trim().toLowerCase();
