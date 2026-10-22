@@ -8,7 +8,7 @@ import { renderDailyRewards, claimDailyReward } from './daily-rewards.js?v=20261
 import { loadEarnSteemStats } from './earn-steem-stats.js?v=20261007-01';
 import { loadEarnSteemCard } from './earn-steem-card.js?v=20261008-card-source-01';
 
-const API_BASE='https://steemflags.mehdiq.workers.dev';
+const API_BASE='https://steemflags.do2earn.workers.dev';
 const SESSION_KEY='steemFlagsAuthSession';
 const REWARD_STATE_KEY='steemFlagsPendingRewards';
 const $=id=>document.getElementById(id);
