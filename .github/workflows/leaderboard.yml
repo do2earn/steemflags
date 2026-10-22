@@ -1,6 +1,10 @@
 name: Process Steem Flags rewards
 
 on:
+  push:
+    paths:
+      - 'scripts/process_steem_rewards.py'
+      - '.github/workflows/leaderboard.yml'
   schedule:
     - cron: '*/5 * * * *'
   workflow_dispatch:
