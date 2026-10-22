@@ -1,6 +1,6 @@
 import {showFlagSetting} from './flag-setting.js?v=20260923-flag-setting-01';
 
-const API_BASE='https://steemflags.mehdiq.workers.dev';
+const API_BASE='https://steemflags.do2earn.workers.dev';
 const SESSION_KEY='steemFlagsAuthSession';
 const FLAG_CODES=new Map();
 
