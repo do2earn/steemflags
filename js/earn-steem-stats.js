@@ -1,4 +1,4 @@
-const API_BASE='https://steemflags.mehdiq.workers.dev';
+const API_BASE='https://steemflags.do2earn.workers.dev';
 export async function loadEarnSteemStats(){
   const earned=document.querySelectorAll('[data-earn-stats="total-earned"]');
   const players=document.querySelectorAll('[data-earn-stats="total-players"]');
