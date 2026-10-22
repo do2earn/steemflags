@@ -10,7 +10,7 @@ jobs:
   inspect:
     runs-on: ubuntu-latest
     steps:
-      - name: List relevant D1 databases (read-only)
+      - name: Verify Cloudflare token and inspect D1 inventory (read-only)
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -21,15 +21,39 @@ jobs:
             echo "::error::Cloudflare API token/account ID secrets are not available to this workflow."
             exit 1
           fi
-          response="$(curl --fail --silent --show-error --max-time 30 \
+
+          verify_code="$(curl --silent --show-error --max-time 30 -o verify.json -w '%{http_code}' \
+            -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            -H "Content-Type: application/json" \
+            "https://api.cloudflare.com/client/v4/user/tokens/verify")"
+          echo "Token verification HTTP status: $verify_code"
+          python3 - <<'PY'
+          import json
+          try:
+              data = json.load(open("verify.json"))
+          except Exception:
+              print("Token verification response was not valid JSON.")
+              raise SystemExit(1)
+          print("Token verification success:", data.get("success", False))
+          for error in data.get("errors", []):
+              print("Cloudflare error code:", error.get("code", "unknown"))
+              print("Cloudflare error message:", error.get("message", "No message"))
+          if not data.get("success"):
+              raise SystemExit("Token verification failed; stopping before D1 inventory request.")
+          PY
+
+          inventory_code="$(curl --silent --show-error --max-time 30 -o inventory.json -w '%{http_code}' \
             -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
             -H "Content-Type: application/json" \
             "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/d1/database?per_page=100")"
-          RESPONSE_JSON="$response" python3 - <<'PY'
+          echo "D1 inventory HTTP status: $inventory_code"
+          RESPONSE_JSON="$(cat inventory.json)" python3 - <<'PY'
           import json, os, sys
           data = json.loads(os.environ["RESPONSE_JSON"])
           if not data.get("success"):
-              print("Cloudflare API returned success=false.")
+              for error in data.get("errors", []):
+                  print("Cloudflare error code:", error.get("code", "unknown"))
+                  print("Cloudflare error message:", error.get("message", "No message"))
               sys.exit(1)
           items = data.get("result") or []
           matches = [x for x in items if any(k in str(x.get("name", "")).lower() for k in ("steemflags", "do2earn"))]
