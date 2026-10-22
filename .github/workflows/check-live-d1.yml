@@ -1,0 +1,54 @@
+name: Check live Steem Flags D1
+
+on:
+  push:
+    paths:
+      - '.github/workflows/check-live-d1.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  inspect-live-d1:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Read live API diagnostics
+        shell: bash
+        run: |
+          set -euo pipefail
+          response=""
+          for endpoint in \
+            "https://steemflags.do2earn.dev/api/health" \
+            "https://steemflags.mehdiq.workers.dev/api/health"; do
+            echo "Checking $endpoint"
+            if response="$(curl --fail --silent --show-error --max-time 20 "$endpoint")"; then
+              break
+            fi
+            response=""
+          done
+          if [ -z "$response" ]; then
+            echo "::error::Could not read the live /api/health endpoint."
+            exit 1
+          fi
+          RESPONSE_JSON="$response" python3 - <<'PY'
+          import json, os, sys
+          try:
+              data = json.loads(os.environ["RESPONSE_JSON"])
+          except Exception as exc:
+              print(f"Health endpoint did not return valid JSON: {exc}")
+              sys.exit(1)
+          db = data.get("database") or {}
+          print("Service:", data.get("service", "unknown"))
+          print("Worker:", data.get("worker", "unknown"))
+          print("API success:", data.get("success"))
+          print("D1 configured:", db.get("configured"))
+          print("D1 status:", db.get("status"))
+          print("Account count:", db.get("account_count", "unavailable"))
+          objects = db.get("objects") or []
+          print("D1 tables/views:", ", ".join(sorted(str(x.get("name", "")) for x in objects)) or "unavailable")
+          columns = db.get("accounts_columns") or []
+          print("Accounts columns:", ", ".join(str(x.get("name", "")) for x in columns) or "unavailable")
+          if not data.get("success") or db.get("status") != "ok":
+              sys.exit(1)
+          PY
