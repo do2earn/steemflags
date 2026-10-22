@@ -22,6 +22,16 @@ jobs:
             exit 1
           fi
 
+          echo "Diagnostic: checking token formatting without revealing its value."
+          python3 - <<'PY'
+          import os
+          token = os.environ.get("CLOUDFLARE_D1_READ_TOKEN", "")
+          print("Token length:", len(token))
+          print("Leading/trailing whitespace present:", token != token.strip())
+          print("Whitespace inside token:", any(ch.isspace() for ch in token.strip()))
+          print("Account ID length:", len(os.environ.get("CLOUDFLARE_ACCOUNT_ID", "")))
+          PY
+
           verify_code="$(curl --silent --show-error --max-time 30 -o verify.json -w '%{http_code}' \
             -H "Authorization: Bearer $CLOUDFLARE_D1_READ_TOKEN" \
             -H "Content-Type: application/json" \
