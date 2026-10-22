@@ -1,0 +1,66 @@
+name: Secure D1 Backup (Manual)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check required secrets
+        shell: bash
+        env:
+          CF_TOKEN: ${{ secrets.CLOUDFLARE_D1_READ_TOKEN }}
+          CF_ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          BACKUP_PASSWORD: ${{ secrets.BACKUP_ENCRYPTION_PASSWORD }}
+        run: |
+          set -euo pipefail
+          test -n "$CF_TOKEN" || { echo "Missing CLOUDFLARE_D1_READ_TOKEN"; exit 1; }
+          test -n "$CF_ACCOUNT" || { echo "Missing CLOUDFLARE_ACCOUNT_ID"; exit 1; }
+          test -n "$BACKUP_PASSWORD" || { echo "Missing BACKUP_ENCRYPTION_PASSWORD; add a separate strong password in repository Actions secrets."; exit 1; }
+          echo "Required secrets are present."
+
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Export, encrypt, and validate backup
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_D1_READ_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          BACKUP_PASSWORD: ${{ secrets.BACKUP_ENCRYPTION_PASSWORD }}
+        run: |
+          set -euo pipefail
+          umask 077
+          mkdir -p secure-backup
+          plain="$RUNNER_TEMP/steemflags-backup.sql"
+          decrypted="$RUNNER_TEMP/steemflags-backup-verify.sql"
+          encrypted="secure-backup/steemflags-backup.sql.enc"
+          trap 'rm -f "$plain" "$decrypted"' EXIT
+
+          npx --yes wrangler@latest d1 export steemflags --remote --output="$plain" --config cloudflare/wrangler.toml
+
+          test -s "$plain"
+          grep -qi 'CREATE TABLE' "$plain"
+          openssl enc -aes-256-cbc -salt -pbkdf2 -iter 250000 -in "$plain" -out "$encrypted" -pass env:BACKUP_PASSWORD
+          test -s "$encrypted"
+          openssl enc -d -aes-256-cbc -pbkdf2 -iter 250000 -in "$encrypted" -out "$decrypted" -pass env:BACKUP_PASSWORD
+          cmp "$plain" "$decrypted"
+          sha256sum "$encrypted" > secure-backup/SHA256SUMS.txt
+          echo "Encrypted backup created and decryption-integrity check passed."
+          echo "Plaintext SQL is not included in the artifact or repository."
+
+      - name: Upload encrypted backup (1-day retention)
+        uses: actions/upload-artifact@v4
+        with:
+          name: steemflags-d1-encrypted-backup
+          path: secure-backup/
+          if-no-files-found: error
+          retention-days: 1
