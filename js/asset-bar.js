@@ -1,5 +1,5 @@
-const API_BASE = 'https://steemflags.mehdiq.workers.dev';
-const ASSET_COMPONENT = './components/asset-bar.html?v=20260826-assetbar-04';
+const API_BASE = 'https://steemflags.do2earn.workers.dev';
+const ASSET_COMPONENT = './components/asset-bar.html?v=20261022-worker-url-fix-01';
 let refreshSerial = 0;
 
 function validUsername(value) { return /^[a-z0-9.-]{3,32}$/.test(String(value || '').trim().toLowerCase()); }
