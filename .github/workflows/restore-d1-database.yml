@@ -47,7 +47,10 @@ jobs:
             --dir "$RUNNER_TEMP/d1-backup"
           test -s "$RUNNER_TEMP/d1-backup/steemflags-backup.sql.enc"
           test -s "$RUNNER_TEMP/d1-backup/SHA256SUMS.txt"
-          (cd "$RUNNER_TEMP/d1-backup" && sha256sum -c SHA256SUMS.txt)
+          expected_sha="$(awk '{print $1}' "$RUNNER_TEMP/d1-backup/SHA256SUMS.txt")"
+          actual_sha="$(sha256sum "$RUNNER_TEMP/d1-backup/steemflags-backup.sql.enc" | awk '{print $1}')"
+          test -n "$expected_sha" && test "$expected_sha" = "$actual_sha" || { echo "Encrypted backup checksum mismatch; refusing to restore."; exit 1; }
+          echo "Encrypted backup checksum verified."
 
       - name: Decrypt backup and validate SQL
         shell: bash
