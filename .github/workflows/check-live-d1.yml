@@ -21,7 +21,7 @@ jobs:
           response=""
           for endpoint in \
             "https://steemflags.do2earn.dev/api/health" \
-            "https://steemflags.mehdiq.workers.dev/api/health"; do
+            "https://steemflags.do2earn.workers.dev/api/health"; do
             echo "Checking $endpoint"
             if response="$(curl --fail --silent --show-error --max-time 20 "$endpoint")"; then
               break
@@ -54,7 +54,7 @@ jobs:
               sys.exit(1)
           PY
           echo "Checking public Steem Games endpoint"
-          games_response="$(curl --silent --show-error --max-time 20 -w '\nHTTP_STATUS:%{http_code}' 'https://steemflags.mehdiq.workers.dev/api/games')"
+          games_response="$(curl --silent --show-error --max-time 20 -w '\nHTTP_STATUS:%{http_code}' 'https://steemflags.do2earn.workers.dev/api/games')"
           printf '%s\n' "$games_response"
           GAMES_RESPONSE="$games_response" python3 - <<'PY'
           import json, os, sys
