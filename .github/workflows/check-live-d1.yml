@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - '.github/workflows/check-live-d1.yml'
+      - 'cloudflare/worker.js'
   workflow_dispatch:
 
 permissions:
@@ -50,5 +51,27 @@ jobs:
           columns = db.get("accounts_columns") or []
           print("Accounts columns:", ", ".join(str(x.get("name", "")) for x in columns) or "unavailable")
           if not data.get("success") or db.get("status") != "ok":
+              sys.exit(1)
+          PY
+          echo "Checking public Steem Games endpoint"
+          games_response="$(curl --silent --show-error --max-time 20 -w '\nHTTP_STATUS:%{http_code}' 'https://steemflags.mehdiq.workers.dev/api/games')"
+          printf '%s\n' "$games_response"
+          GAMES_RESPONSE="$games_response" python3 - <<'PY'
+          import json, os, sys
+          raw = os.environ["GAMES_RESPONSE"]
+          body, marker, status = raw.rpartition("\nHTTP_STATUS:")
+          if not marker or status != "200":
+              print("Steem Games API returned a non-200 response.")
+              sys.exit(1)
+          try:
+              data = json.loads(body)
+          except Exception as exc:
+              print(f"Steem Games API returned invalid JSON: {exc}")
+              sys.exit(1)
+          games = data.get("games")
+          print("API success:", data.get("success"))
+          print("Games returned:", len(games) if isinstance(games, list) else "invalid")
+          if not data.get("success") or not isinstance(games, list):
+              print("API response:", body[:2000])
               sys.exit(1)
           PY
